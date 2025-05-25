@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galamo Galaxy Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Rubik', sans-serif; 
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        .neu-brutal {
+            border: 4px solid #000;
+            box-shadow: 8px 8px 0px #000;
+            transition: all 0.2s ease;
+        }
+        .neu-brutal:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 11px 11px 0px #000;
+        }
+        .neu-brutal-sm {
+            border: 3px solid #000;
+            box-shadow: 5px 5px 0px #000;
+            transition: all 0.2s ease;
+        }
+        .neu-brutal-sm:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 7px 7px 0px #000;
+        }
+        .loading-spinner {
+            display: none;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(15, 23, 42, 1) 0%, rgba(15, 23, 42, 0.95) 100%);
+            overflow: hidden;
+        }
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.1; }
+        }
+        .lego-btn {
+            background-color: #f59e0b;
+            color: #000;
+            border: 4px solid #000;
+            box-shadow: 6px 6px 0px #000;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+        .lego-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px #000;
+        }
+        .lego-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 4px 4px 0px #000;
+        }
+        .lego-input {
+            background-color: #334155;
+            color: white;
+            border: 4px solid #000;
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .lego-card {
+            background-color: #1e293b;
+            border: 4px solid #000;
+            box-shadow: 8px 8px 0px #000;
+        }
+        .space-gradient {
+            background: linear-gradient(to bottom, #0f172a, #1e293b);
+        }
+        .modal {
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+        .rocket-animation {
+            animation: rocketMove 2s ease-in-out infinite;
+        }
+        @keyframes rocketMove {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .pop-in {
+            animation: popIn 0.3s ease-out;
+            transform-origin: center;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .auth-modal {
+            max-width: 500px;
+            width: 90%;
+        }
+        .avatar-collection {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        .avatar-option {
+            cursor: pointer;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        .avatar-selected {
+            border-color: #f59e0b;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="space-gradient min-h-screen">
+    <div class="stars" id="stars"></div>
+
+    <header class="py-4 px-4 lg:px-6 bg-slate-800 border-b-4 border-black sticky top-0 z-30">
+        <div class="container mx-auto flex flex-wrap items-center justify-between">
+            <div class="flex items-center">
+                <img src="images/galamo_main.svg" alt="Galamo Spaceship" style="height: 40px;">
+                
+            </div>
+            <div class="flex space-x-2 md:space-x-4 mt-0">
+                <button id="login-header-btn" class="lego-btn py-1 md:py-2 px-2 md:px-4 rounded-lg bg-blue-500 text-white text-sm md:text-base">Login</button>
+                <button id="signup-header-btn" class="lego-btn py-1 md:py-2 px-2 md:px-4 rounded-lg bg-green-500 text-white text-sm md:text-base">Sign Up</button>
+                <button id="logout-btn" class="hidden lego-btn py-1 md:py-2 px-2 md:px-4 rounded-lg bg-red-500 text-white text-sm md:text-base">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 modal z-50 flex items-center justify-center hidden">
+        <div class="bg-slate-800 p-6 rounded-lg lego-card auth-modal pop-in">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl text-yellow-400 font-bold">Login to Galaxy Explorer</h2>
+                <button class="close-modal lego-btn bg-red-500 text-white p-2 rounded-lg">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <form id="login-form" class="space-y-4">
+                <input type="email" placeholder="Space Communication Channel (Email)" class="w-full p-3 lego-input rounded-lg" required>
+                <input type="password" placeholder="Secret Access Code" class="w-full p-3 lego-input rounded-lg" required>
+                <div class="flex justify-between items-center mt-4">
+                    <button type="button" id="to-signup-btn" class="text-blue-300 hover:text-yellow-400">New explorer? Sign up!</button>
+                    <button type="submit" class="lego-btn py-3 px-6 rounded-lg bg-blue-500 text-white">
+                        <i class="bi bi-rocket-takeoff mr-2"></i>Launch Mission
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="fixed inset-0 modal z-50 flex items-center justify-center hidden">
+        <div class="bg-slate-800 p-6 rounded-lg lego-card auth-modal pop-in">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl text-yellow-400 font-bold">Join the Galaxy Explorer Team</h2>
+                <button class="close-modal lego-btn bg-red-500 text-white p-2 rounded-lg">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <form id="signup-form" class="space-y-4">
+                <input type="text" placeholder="Space Commander Name" class="w-full p-3 lego-input rounded-lg" required>
+                <input type="email" placeholder="Space Communication Channel (Email)" class="w-full p-3 lego-input rounded-lg" required>
+                <input type="password" placeholder="Secret Access Code" class="w-full p-3 lego-input rounded-lg" required>
+                
+                <div>
+                    <p class="mb-2 text-yellow-400 font-bold">Choose your Space Explorer Avatar:</p>
+                    <div class="avatar-collection" id="avatar-selection">
+                        <div class="avatar-option" data-avatar="image/baby-yoshi.png">
+                            <img src="images/baby-yoshi.png" alt="Galamo Spaceman" class="w-full h-full object-cover">
+                        </div>
+                        <div class="avatar-option" data-avatar="images/kirby_inhale.png">
+                            <img src="images/kirby_inhale.png" alt="Galamo Astronaut" class="w-full h-full object-cover">
+                        </div>
+                        <div class="avatar-option" data-avatar="image/kirby_feet.png">
+                            <img src="images/kirby_feet.png" alt="Galamo Star Wars" class="w-full h-full object-cover">
+                        </div>
+                        <div class="avatar-option" data-avatar="images/kirby.png">
+                            <img src="images/kirby.png" alt="Galamo Mario" class="w-full h-full object-cover">
+                        </div>
+                        <div class="avatar-option" data-avatar="images/kirby_starpad.png">
+                            <img src="images/kirby_starpad.png" alt="Galamo Batman" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    <input type="hidden" id="selected-avatar" name="avatar">
+                </div>
+                
+                <div class="flex justify-between items-center mt-4">
+                    <button type="button" id="to-login-btn" class="text-blue-300 hover:text-yellow-400">Already an explorer? Login!</button>
+                    <button type="submit" class="lego-btn py-3 px-6 rounded-lg bg-green-500 text-white">
+                        <i class="bi bi-person-plus mr-2"></i>Join Space Force
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-content" class="container mx-auto p-4 pt-8">
+        <!-- Information Section for Non-Logged Users -->
+        <style>
+            @keyframes float {
+              0% { transform: translateY(0) rotate(0deg); }
+              50% { transform: translateY(-20px) rotate(1deg); }
+              100% { transform: translateY(0) rotate(0deg); }
+            }
+        
+            .spaceship-wrapper {
+              position: absolute;
+              top: 15%;
+              left: 5%;
+              z-index: 10;
+              background-color: transparent;
+              animation: float 3s ease-in-out infinite;
+            }
+        
+            .spaceship-img {
+              height: 8rem;  /* equivalent to h-32 */
+              width: 9rem;   /* equivalent to w-36 */
+            }
+        
+            @media (min-width: 768px) {
+              .spaceship-img {
+                height: 14rem;  /* md:h-56 */
+                width: 16rem;   /* md:w-64 */
+              }
+            }
+
+    .spaceship-wrapper- {
+      position: absolute;
+      top: 20%;
+      right: 5%; /* moved from left to right */
+      z-index: 10;
+      background-color: transparent;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .spaceship-img- {
+      transform: scaleX(-1); /* mirror image horizontally as default */
+    }
+
+  </style>
+          </style>
+        <div class="spaceship-wrapper">
+            <img src="images/spaceship.png" alt="Spaceship" class="spaceship-img">
+          </div>
+          <div class="spaceship-wrapper-">
+            <img src="images/man.png" alt="Spaceship" class="spaceship-img-">
+          </div>
+          
+        <div id="info-section" class="py-8">
+            <div class="flex flex-col md:flex-row items-center gap-8 mb-12 justify-center">
+                <img src="images/o.svg" alt="Galamo Space Hero" class="w-32 h-32 md:w-48 md:h-48 object-cover neu-brutal rounded-lg">
+                <div class="text-center md:text-left max-w-xl">
+                    <h2 class="text-2xl md:text-3xl text-yellow-400 font-bold mb-3">Join Our Space Mission to Explore the Galaxies!</h2>
+                    <p class="text-blue-300">Discover amazing galaxy formations and share them with fellow Galamo space explorers. Our advanced AI will analyze your discoveries and help categorize galaxies across the universe!</p>
+                    <div class="flex flex-wrap gap-3 mt-4 justify-center md:justify-start">
+                        <button id="info-login-btn" class="lego-btn py-2 px-5 rounded-lg bg-blue-500 text-white">
+                            <i class="bi bi-rocket-takeoff mr-2"></i>Login
+                        </button>
+                        <button id="info-signup-btn" class="lego-btn py-2 px-5 rounded-lg bg-green-500 text-white">
+                            <i class="bi bi-person-plus mr-2"></i>Sign Up
+                        </button>
+                        <a href="game.html" id="info-signup-btn" class="lego-btn py-2 px-5 rounded-lg bg-red-500 text-white">
+                            <i class="bi bi-lightbulb"></i> Learn
+                        </a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section (Hidden until logged in) -->
+        <div id="upload-section" class="hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-yellow-400 mb-2">Welcome, <span id="username-display">Space Explorer</span>!</h2>
+                <p class="text-lg md:text-xl text-blue-300">Upload a galaxy image for our Space AI to analyze</p>
+            </div>
+            
+            <div class="bg-slate-700 p-6 rounded-lg lego-card mb-12 max-w-3xl mx-auto">
+                <div class="flex items-center mb-4">
+                    <i class="bi bi-telescope-fill text-3xl text-yellow-400 mr-3"></i>
+                    <h2 class="text-2xl text-yellow-400 font-bold">Upload Galaxy Image</h2>
+                </div>
+                <form id="upload-form" class="space-y-4">
+                    <div class="border-3 border-dashed border-yellow-500 rounded-lg p-8 text-center relative cursor-pointer">
+                        <i class="bi bi-cloud-arrow-up text-5xl text-yellow-400"></i>
+                        <p class="my-3 text-lg">Drop your galaxy image or click to browse</p>
+                        <input id="file-input" type="file" accept="image/*" class="w-full h-full opacity-0 absolute inset-0 cursor-pointer" required>
+                    </div>
+                    <div id="preview-container" class="hidden">
+                        <img id="image-preview" class="w-full h-48 md:h-64 object-cover rounded-lg neu-brutal my-3">
+                    </div>
+                    <button type="submit" class="w-full lego-btn py-3 rounded-lg bg-blue-600 text-white text-lg">
+                        <i class="bi bi-stars mr-2"></i>Analyze Galaxy Morphology
+                        <span class="loading-spinner ml-2"><i class="bi bi-arrow-clockwise"></i></span>
+                    </button>
+                </form>
+                <div id="prediction-result" class="mt-6 p-4 bg-slate-800 neu-brutal rounded-lg hidden">
+                    <div class="flex items-center mb-2">
+                        <i class="bi bi-lightbulb text-2xl text-yellow-400 mr-2"></i>
+                        <h3 class="text-xl text-yellow-400 font-bold">Galaxy Morphology Prediction:</h3>
+                    </div>
+                    <div class="flex items-start mt-3">
+                        <i class="bi bi-robot text-xl text-blue-400 mr-2 mt-1"></i>
+                        <p id="prediction-text" class="text-lg text-blue-200"></p>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <button id="share-prediction-btn" class="lego-btn py-2 px-6 rounded-lg bg-green-600 text-white">
+                            <i class="bi bi-share-fill mr-2"></i>Share with Galaxy Explorers
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Community Posts Section (Always visible) -->
+        <div class="mb-8">
+            <div class="flex items-center mb-4">
+                <i class="bi bi-stars text-3xl text-yellow-400 mr-3"></i>
+                <h2 class="text-2xl text-yellow-400 font-bold">Galaxy Explorer Community</h2>
+            </div>
+            <p class="text-lg text-blue-300 mb-4">Explore galaxies identified by our space adventurers</p>
+        </div>
+
+        <!-- Community Posts Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="community-posts">
+            <!-- Loading indicator -->
+            <div id="posts-loading" class="col-span-full text-center py-8">
+                <div class="rocket-animation inline-block mb-3">
+                    <i class="bi bi-rocket text-5xl text-yellow-400"></i>
+                </div>
+                <p class="mt-2 text-blue-300 text-xl">Loading galaxy discoveries...</p>
+            </div>
+            <!-- Posts will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Post Detail Modal -->
+    <div id="post-modal" class="fixed inset-0 modal z-50 flex items-center justify-center hidden">
+        <div class="bg-slate-800 p-6 rounded-lg lego-card max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl text-yellow-400 font-bold">Galaxy Details</h2>
+                <button id="close-modal" class="lego-btn bg-red-500 text-white p-2 rounded-lg">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div id="modal-content" class="space-y-4">
+                <!-- Modal content will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="py-6 mt-12 bg-slate-800 border-t-4 border-black">
+        <div class="container mx-auto text-center px-4">
+            <p class="text-blue-300">© 2025 Galamo Galaxy Explorer - Space Mission Division</p>
+            <div class="flex justify-center space-x-4 mt-4">
+                <a href="#" class="text-yellow-400 hover:text-yellow-300 text-2xl"><i class="bi bi-rocket"></i></a>
+                <a href="#" class="text-yellow-400 hover:text-yellow-300 text-2xl"><i class="bi bi-star"></i></a>
+                <a href="#" class="text-yellow-400 hover:text-yellow-300 text-2xl"><i class="bi bi-globe"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Create stars in background
+        function createStars() {
+            const stars = document.getElementById('stars');
+            const numberOfStars = 150;
+            
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random size between 1 and 3 pixels
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Random position
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                
+                // Random animation delay
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                
+                stars.appendChild(star);
+            }
+        }
+        
+        createStars();
+
+        // Initialize MongoDB connection
+        const appSlug = 'galaxy-explorer-123456';
+        const apiUrl = 'https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one';
+        const authToken = '2srYX9suUcZ1zYuAzfE1grPHjZi2';
+        
+        // Element references
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const loginHeaderBtn = document.getElementById('login-header-btn');
+        const signupHeaderBtn = document.getElementById('signup-header-btn');
+        const infoLoginBtn = document.getElementById('info-login-btn');
+        const infoSignupBtn = document.getElementById('info-signup-btn');
+        const loginModal = document.getElementById('login-modal');
+        const signupModal = document.getElementById('signup-modal');
+        const toSignupBtn = document.getElementById('to-signup-btn');
+        const toLoginBtn = document.getElementById('to-login-btn');
+        const closeModalBtns = document.querySelectorAll('.close-modal');
+        const logoutBtn = document.getElementById('logout-btn');
+        const infoSection = document.getElementById('info-section');
+        const uploadSection = document.getElementById('upload-section');
+        const fileInput = document.getElementById('file-input');
+        const previewContainer = document.getElementById('preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const uploadForm = document.getElementById('upload-form');
+        const predictionResult = document.getElementById('prediction-result');
+        const predictionText = document.getElementById('prediction-text');
+        const sharePredictionBtn = document.getElementById('share-prediction-btn');
+        const postsContainer = document.getElementById('community-posts');
+        const postsLoading = document.getElementById('posts-loading');
+        const usernameDisplay = document.getElementById('username-display');
+        const postModal = document.getElementById('post-modal');
+        const modalContent = document.getElementById('modal-content');
+        const closeModal = document.getElementById('close-modal');
+        const avatarOptions = document.querySelectorAll('.avatar-option');
+        
+        // Auth Management
+        let currentUser = null;
+        let currentPrediction = null;
+        let currentImageData = null;
+        let selectedAvatar = null; // For avatar selection in signup
+
+        // Avatar selection
+        avatarOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Remove selected class from all options
+                avatarOptions.forEach(o => o.classList.remove('avatar-selected'));
+                // Add selected class to clicked option
+                option.classList.add('avatar-selected');
+                // Store selected avatar URL
+                selectedAvatar = option.getAttribute('data-avatar');
+                document.getElementById('selected-avatar').value = selectedAvatar;
+            });
+        });
+
+        // Modal Management
+        function openLoginModal() {
+            loginModal.classList.remove('hidden');
+            signupModal.classList.add('hidden');
+            setTimeout(() => {
+                document.querySelector('#login-form input[type="email"]').focus();
+            }, 100);
+        }
+
+        function openSignupModal() {
+            signupModal.classList.remove('hidden');
+            loginModal.classList.add('hidden');
+            setTimeout(() => {
+                document.querySelector('#signup-form input[type="text"]').focus();
+            }, 100);
+        }
+
+        function closeModals() {
+            loginModal.classList.add('hidden');
+            signupModal.classList.add('hidden');
+        }
+
+        // Event listeners for modals
+        loginHeaderBtn.addEventListener('click', openLoginModal);
+        signupHeaderBtn.addEventListener('click', openSignupModal);
+        infoLoginBtn.addEventListener('click', openLoginModal);
+        infoSignupBtn.addEventListener('click', openSignupModal);
+        toSignupBtn.addEventListener('click', openSignupModal);
+        toLoginBtn.addEventListener('click', openLoginModal);
+        
+        closeModalBtns.forEach(btn => {
+            btn.addEventListener('click', closeModals);
+        });
+
+        // Close modals when clicking outside
+        [loginModal, signupModal].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModals();
+            });
+        });
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', () => {
+            currentUser = null;
+            uploadSection.classList.add('hidden');
+            infoSection.classList.remove('hidden');
+            loginHeaderBtn.classList.remove('hidden');
+            signupHeaderBtn.classList.remove('hidden');
+            logoutBtn.classList.add('hidden');
+            
+            // Reset upload form
+            uploadForm.reset();
+            previewContainer.classList.add('hidden');
+            predictionResult.classList.add('hidden');
+        });
+
+        // Login form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const emailField = e.target.querySelector('input[type="email"]');
+            const passwordField = e.target.querySelector('input[type="password"]');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            if (!emailField.value || !passwordField.value) {
+                alert("Please enter both email and password!");
+                return;
+            }
+            
+            submitBtn.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin mr-2"></i>Launching...';
+            submitBtn.disabled = true;
+            
+            // Simulate login with delay
+            setTimeout(() => {
+                const username = emailField.value.split('@')[0];
+                // Random avatar for login users who haven't registered
+                const randomAvatarIndex = Math.floor(Math.random() * avatarOptions.length);
+                const avatarUrl = avatarOptions[randomAvatarIndex].getAttribute('data-avatar');
+                
+                currentUser = { 
+                    id: `user_${Date.now()}`, 
+                    username,
+                    avatar: avatarUrl
+                };
+                
+                usernameDisplay.textContent = username;
+                showLoggedInUI();
+                closeModals();
+                
+                submitBtn.innerHTML = '<i class="bi bi-rocket-takeoff mr-2"></i>Launch Mission';
+                submitBtn.disabled = false;
+                
+                // Clear form
+                emailField.value = '';
+                passwordField.value = '';
+            }, 1000);
+        });
+
+        // Signup form submission
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nameField = e.target.querySelector('input[type="text"]');
+            const emailField = e.target.querySelector('input[type="email"]');
+            const passwordField = e.target.querySelector('input[type="password"]');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            if (!nameField.value || !emailField.value || !passwordField.value) {
+                alert("Please fill all fields!");
+                return;
+            }
+            
+            if (!selectedAvatar) {
+                alert("Please select an avatar!");
+                return;
+            }
+            
+            submitBtn.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin mr-2"></i>Registering...';
+            submitBtn.disabled = true;
+            
+            // Simulate signup with delay
+            setTimeout(() => {
+                currentUser = { 
+                    id: `user_${Date.now()}`, 
+                    username: nameField.value,
+                    avatar: selectedAvatar
+                };
+                
+                usernameDisplay.textContent = nameField.value;
+                showLoggedInUI();
+                closeModals();
+                
+                submitBtn.innerHTML = '<i class="bi bi-person-plus mr-2"></i>Join Space Force';
+                submitBtn.disabled = false;
+                
+                // Clear form
+                nameField.value = '';
+                emailField.value = '';
+                passwordField.value = '';
+                avatarOptions.forEach(option => option.classList.remove('avatar-selected'));
+                selectedAvatar = null;
+            }, 1000);
+        });
+
+        function showLoggedInUI() {
+            infoSection.classList.add('hidden');
+            uploadSection.classList.remove('hidden');
+            loginHeaderBtn.classList.add('hidden');
+            signupHeaderBtn.classList.add('hidden');
+            logoutBtn.classList.remove('hidden');
+            loadPosts(); // Refresh posts when logging in
+        }
+
+        // Image preview functionality
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                    predictionResult.classList.add('hidden'); // Hide previous prediction if any
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Galaxy Upload and Analysis
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!currentUser) {
+                openLoginModal();
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("Please select a galaxy image first!");
+                return;
+            }
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const spinner = submitBtn.querySelector('.loading-spinner');
+            
+            submitBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const imageData = event.target.result;
+                currentImageData = imageData;
+                
+                try {
+                    // Simulate AI Analysis for faster demo
+                    setTimeout(async () => {
+                        // Generate a random prediction from multiple templates
+                        const galaxyTypes = [
+                            "This is a barred spiral galaxy, identifiable by the distinctive linear bar-like structure crossing through the galactic center, with spiral arms extending from the ends of the bar. The bar is composed of stars and often drives gas inward to the galactic center, potentially fueling a central black hole.",
+                            
+                            ];
+                        
+                        // Choose a random prediction
+                        const randomPrediction = galaxyTypes[Math.floor(Math.random() * galaxyTypes.length)];
+                        currentPrediction = randomPrediction;
+                        
+                        // Show prediction
+                        predictionResult.classList.remove('hidden');
+                        predictionText.textContent = randomPrediction;
+                        
+                        submitBtn.disabled = false;
+                        spinner.style.display = 'none';
+                        
+                        // Scroll to prediction result
+                        predictionResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error analyzing galaxy image. Our space telescopes are having trouble.');
+                    submitBtn.disabled = false;
+                    spinner.style.display = 'none';
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        // Share prediction button
+        sharePredictionBtn.addEventListener('click', async () => {
+            if (!currentUser) {
+                openLoginModal();
+                return;
+            }
+            
+            if (!currentPrediction || !currentImageData) {
+                alert("No prediction available to share!");
+                return;
+            }
+            
+            sharePredictionBtn.disabled = true;
+            sharePredictionBtn.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin mr-2"></i>Sharing...';
+            
+            try {
+                // Simulate post saving
+                setTimeout(() => {
+                    // Create a new post object
+                    const newPost = {
+                        _id: `post_${Date.now()}`,
+                        username: currentUser.username,
+                        userId: currentUser.id,
+                        avatar: currentUser.avatar,
+                        timestamp: new Date().toISOString(),
+                        imageUrl: currentImageData,
+                        prediction: currentPrediction,
+                        likes: 0,
+                        comments: []
+                    };
+                    
+                    // Add the new post to the beginning of the community posts section
+                    renderPost(newPost, true);
+                    
+                    // Show success message
+                    sharePredictionBtn.innerHTML = '<i class="bi bi-check-circle-fill mr-2"></i>Successfully Shared!';
+                    sharePredictionBtn.classList.remove('bg-green-600');
+                    sharePredictionBtn.classList.add('bg-blue-600');
+                    
+                    // Reset after 3 seconds
+                    setTimeout(() => {
+                        sharePredictionBtn.disabled = false;
+                        sharePredictionBtn.innerHTML = '<i class="bi bi-share-fill mr-2"></i>Share with Galaxy Explorers';
+                        sharePredictionBtn.classList.remove('bg-blue-600');
+                        sharePredictionBtn.classList.add('bg-green-600');
+                        
+                        // Clear the form and preview
+                        fileInput.value = '';
+                        previewContainer.classList.add('hidden');
+                        predictionResult.classList.add('hidden');
+                        currentPrediction = null;
+                        currentImageData = null;
+                    }, 2000);
+                    
+                    // Scroll to community posts section
+                    document.querySelector('#community-posts').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error saving post:', error);
+                alert('Error sharing your discovery. Please try again!');
+                sharePredictionBtn.disabled = false;
+                sharePredictionBtn.innerHTML = '<i class="bi bi-share-fill mr-2"></i>Share with Galaxy Explorers';
+            }
+        });
+
+        // Load posts on page load
+        async function loadPosts() {
+            postsLoading.classList.remove('hidden');
+            postsContainer.innerHTML = '';
+            postsContainer.appendChild(postsLoading);
+            
+            // Sample avatar URLs
+            const avatarUrls = [];
+            avatarOptions.forEach(option => {
+                avatarUrls.push(option.getAttribute('data-avatar'));
+            });
+            
+            // Simulate loading for demo purposes
+            setTimeout(() => {
+                const demoData = [
+                    {
+                        _id: 'post1',
+                        username: 'SpaceCommander',
+                        userId: 'user1',
+                        avatar: avatarUrls[0],
+                        timestamp: new Date().toISOString(),
+                        imageUrl: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=500',
+                        prediction: 'This appears to be a spiral galaxy, characterized by its distinctive spiral arms extending from a central bulge. The bright blue regions in the arms indicate active star formation, while the yellower central region suggests an older stellar population. Based on the structure, this could be classified as an Sc type in the Hubble sequence.',
+                        likes: 42,
+                        comments: [
+                            {username: 'AstroExplorer', avatar: avatarUrls[1], text: 'Amazing finding! I love the structure of the spiral arms.'},
+                            {username: 'GalaxyHunter', avatar: avatarUrls[2], text: 'The color gradient is spectacular. Classic example of a spiral galaxy.'}
+                        ]
+                    },
+                    {
+                        _id: 'post2',
+                        username: 'CosmicVoyager',
+                        userId: 'user2',
+                        avatar: avatarUrls[1],
+                        timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+                        imageUrl: 'https://images.unsplash.com/photo-1539321908154-04927596764d?w=500',
+                        prediction: 'The image shows an elliptical galaxy. These galaxies appear as smooth, featureless ellipsoidal shapes without spiral arms or distinctive features. The predominantly yellow/reddish color suggests an older stellar population with little ongoing star formation. Based on its apparent shape, it could be classified as an E3 or E4 elliptical.',
+                        likes: 29,
+                        comments: [
+                            {username: 'StarGazer', avatar: avatarUrls[3], text: 'The lack of structure is fascinating. Classic elliptical!'}
+                        ]
+                    },
+                    {
+                        _id: 'post3',
+                        username: 'MilkyWayExplorer',
+                        userId: 'user3',
+                        avatar: avatarUrls[2],
+                        timestamp: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+                        imageUrl: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=500',
+                        prediction: 'This is a barred spiral galaxy, identifiable by the distinctive linear bar-like structure crossing through the galactic center, with spiral arms extending from the ends of the bar. The bar is composed of stars and often drives gas inward to the galactic center, potentially fueling a central black hole.',
+                        likes: 56,
+                        comments: [
+                            {username: 'NebulaHunter', avatar: avatarUrls[4], text: 'The bar structure is so clear in this one!'},
+                            {username: 'AstroExplorer', avatar: avatarUrls[1], text: 'I wonder how the gas flows affect star formation along the bar...'}
+                        ]
+                    },
+                    {
+                        _id: 'post4',
+                        username: 'DeepSpaceNavigator',
+                        userId: 'user4',
+                        avatar: avatarUrls[3],
+                        timestamp: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
+                        imageUrl: 'https://images.unsplash.com/photo-1465101162946-4377e57745c3?w=500',
+                        prediction: 'The image reveals a lenticular galaxy (S0 type), which has features of both spiral and elliptical galaxies. It has a pronounced central bulge like ellipticals, but also contains a disk without spiral arms. The lack of blue regions suggests minimal recent star formation.',
+                        likes: 38,
+                        comments: [
+                            {username: 'StarGazer', avatar: avatarUrls[3], text: 'Fascinating transitional form between spiral and elliptical!'}
+                        ]
+                    },
+                    {
+                        _id: 'post5',
+                        username: 'GalacticPioneer',
+                        userId: 'user5',
+                        avatar: avatarUrls[4],
+                        timestamp: new Date(Date.now() - 432000000).toISOString(), // 5 days ago
+                        imageUrl: 'https://images.unsplash.com/photo-1454789548928-9efd52dc4031?w=500',
+                        prediction: 'This appears to be an irregular galaxy with no definite shape. Irregular galaxies like this often result from gravitational interactions with nearby galaxies, causing distorted structures. The blue patches visible throughout suggest areas of active star formation triggered by these interactions.',
+                        likes: 67,
+                        comments: [
+                            {username: 'CosmicVoyager', avatar: avatarUrls[1], text: 'The chaos of these systems is beautiful in its own way!'},
+                            {username: 'NebulaHunter', avatar: avatarUrls[4], text: 'I wonder what it would look like from a planet inside this galaxy...'}
+                        ]
+                    },
+                    {
+                        _id: 'post6',
+                        username: 'StardustCollector',
+                        userId: 'user6',
+                        avatar: avatarUrls[0],
+                        timestamp: new Date(Date.now() - 518400000).toISOString(), // 6 days ago
+                        imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=500',
+                        prediction: 'This fascinating image shows what appears to be a ring galaxy, where a compact galaxy has passed through a larger one, creating a ripple effect that forms a ring-like structure. The bright blue regions in the ring indicate active star formation triggered by the collision, while the yellow center contains older stars.',
+                        likes: 83,
+                        comments: [
+                            {username: 'AstroExplorer', avatar: avatarUrls[1], text: 'Ring galaxies are so rare! Amazing find!'},
+                            {username: 'GalaxyHunter', avatar: avatarUrls[2], text: 'The collision physics here must be incredible to witness up close.'},
+                            {username: 'CosmicVoyager', avatar: avatarUrls[1], text: 'I wonder how long these structures remain stable before dissipating...'}
+                        ]
+                    }
+                ];
+                
+                // Clear loading indicator and container
+                postsLoading.classList.add('hidden');
+                postsContainer.innerHTML = '';
+                
+                // Render posts
+                demoData.forEach(post => {
+                    renderPost(post);
+                });
+            }, 1500);
+        }
+
+        function renderPost(post, prepend = false) {
+            const postDate = new Date(post.timestamp).toLocaleDateString('en-US', {
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric'
+            });
+            
+            const postCard = document.createElement('div');
+            postCard.className = 'bg-slate-700 p-4 rounded-lg lego-card hover:translate-x-[-5px] hover:translate-y-[-5px] transition-transform duration-300';
+            postCard.dataset.postId = post._id;
+            
+            // For new posts, add a special class for highlighting
+            if (prepend) {
+                postCard.classList.add('animate-pulse', 'ring-4', 'ring-yellow-500');
+                setTimeout(() => {
+                    postCard.classList.remove('animate-pulse', 'ring-4', 'ring-yellow-500');
+                }, 3000);
+            }
+            
+            postCard.innerHTML = `
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="bg-yellow-500 rounded-full neu-brutal-sm flex-shrink-0 w-10 h-10 overflow-hidden">
+                        <img src="${post.avatar || avatarOptions[0].getAttribute('data-avatar')}" alt="${post.username}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="font-bold text-lg text-yellow-400">${post.username}</div>
+                        <div class="text-blue-300 text-xs">${postDate}</div>
+                    </div>
+                </div>
+                <div class="relative h-48 mb-3 overflow-hidden rounded-lg neu-brutal-sm">
+                    <img src="${post.imageUrl}" alt="Galaxy" class="w-full h-full object-cover">
+                </div>
+                <div class="flex items-start mb-3">
+                    <i class="bi bi-robot text-lg text-blue-400 mt-1 mr-2 flex-shrink-0"></i>
+                    <p class="text-blue-200 line-clamp-2 text-sm overflow-hidden">${truncateText(post.prediction, 100)}</p>
+                </div>
+                <div class="flex items-center justify-between gap-2 mt-3">
+                    <button class="like-btn flex items-center gap-1 lego-btn px-2 py-1 rounded-lg bg-pink-600 text-white text-sm">
+                        <i class="bi bi-heart-fill"></i>
+                        <span class="likes-count">${post.likes}</span>
+                    </button>
+                    <button class="comment-btn flex items-center gap-1 lego-btn px-2 py-1 rounded-lg bg-blue-600 text-white text-sm">
+                        <i class="bi bi-chat-fill"></i>
+                        <span class="comments-count">${post.comments?.length || 0}</span>
+                    </button>
+                    <button class="view-btn flex items-center gap-1 lego-btn px-2 py-1 rounded-lg bg-yellow-500 text-black text-sm">
+                        <i class="bi bi-zoom-in"></i>
+                        <span>View</span>
+                    </button>
+                </div>
+            `;
+            
+            // Add event listeners
+            const likeBtn = postCard.querySelector('.like-btn');
+            const commentBtn = postCard.querySelector('.comment-btn');
+            const viewBtn = postCard.querySelector('.view-btn');
+            
+            likeBtn.addEventListener('click', () => likePost(post._id));
+            commentBtn.addEventListener('click', () => openPostModal(post._id, true));
+            viewBtn.addEventListener('click', () => openPostModal(post._id));
+            
+            if (prepend && postsContainer.children.length > 0) {
+                postsContainer.insertBefore(postCard, postsContainer.firstChild);
+            } else {
+                postsContainer.appendChild(postCard);
+            }
+        }
+        
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.slice(0, maxLength) + '...';
+        }
+
+        // Like post functionality
+        function likePost(postId) {
+            if (!currentUser) {
+                openLoginModal();
+                return;
+            }
+            
+            // Find all instances of the like button for this post (card and modal if open)
+            const postCard = document.querySelector(`.lego-card[data-post-id="${postId}"]`);
+            const likeBtn = postCard?.querySelector('.like-btn');
+            const likesCount = likeBtn?.querySelector('.likes-count');
+            
+            // Modal like count if modal is open
+            const modalLikeBtn = document.querySelector('#modal-content .modal-like-btn');
+            const modalLikesCount = modalLikeBtn?.querySelector('.modal-likes-count');
+            
+            if (likesCount) {
+                const currentLikes = parseInt(likesCount.textContent);
+                likesCount.textContent = currentLikes + 1;
+                
+                // Animate button
+                likeBtn.classList.add('scale-110');
+                setTimeout(() => {
+                    likeBtn.classList.remove('scale-110');
+                }, 300);
+            }
+            
+            if (modalLikesCount) {
+                const currentModalLikes = parseInt(modalLikesCount.textContent);
+                modalLikesCount.textContent = currentModalLikes + 1;
+                
+                // Animate button
+                modalLikeBtn.classList.add('scale-110');
+                setTimeout(() => {
+                    modalLikeBtn.classList.remove('scale-110');
+                }, 300);
+            }
+
+            // In a real app, you would update the database here
+            console.log(`Liked post: ${postId}`);
+        }
+
+        // Find post data for a given ID
+        function findPostData(postId) {
+            // Check if this is a dynamically added post
+            if (postId.startsWith('post_')) {
+                const postElement = document.querySelector(`.lego-card[data-post-id="${postId}"]`);
+                if (!postElement) return null;
+                
+                const username = postElement.querySelector('.font-bold.text-lg.text-yellow-400').textContent;
+                const avatarImg = postElement.querySelector('.bg-yellow-500.rounded-full img');
+                const avatar = avatarImg ? avatarImg.src : null;
+                const dateText = postElement.querySelector('.text-blue-300.text-xs').textContent;
+                const imageUrl = postElement.querySelector('.relative.h-48 img').src;
+                const prediction = postElement.querySelector('.text-blue-200.line-clamp-2').textContent;
+                const likes = parseInt(postElement.querySelector('.likes-count').textContent);
+                const commentsCount = parseInt(postElement.querySelector('.comments-count').textContent);
+                
+                return {
+                    _id: postId,
+                    username,
+                    userId: 'dynamic',
+                    avatar,
+                    timestamp: new Date(dateText).toISOString() || new Date().toISOString(),
+                    imageUrl,
+                    prediction,
+                    likes,
+                    comments: [],
+                    dynamicPost: true
+                };
+            }
+            
+            // First try to find from demo data
+            const demoData = getDemoData();
+            return demoData.find(p => p._id === postId);
+        }
+        
+        function getDemoData() {
+            // Sample avatar URLs from avatar options
+            const avatarUrls = [];
+            avatarOptions.forEach(option => {
+                avatarUrls.push(option.getAttribute('data-avatar'));
+            });
+            
+            return [
+                {
+                    _id: 'post1',
+                    username: 'SpaceCommander',
+                    userId: 'user1',
+                    avatar: avatarUrls[0],
+                    timestamp: new Date().toISOString(),
+                    imageUrl: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=500',
+                    prediction: 'This appears to be a spiral galaxy, characterized by its distinctive spiral arms extending from a central bulge. The bright blue regions in the arms indicate active star formation, while the yellower central region suggests an older stellar population. Based on the structure, this could be classified as an Sc type in the Hubble sequence.',
+                    likes: 42,
+                    comments: [
+                        {username: 'AstroExplorer', avatar: avatarUrls[1], text: 'Amazing finding! I love the structure of the spiral arms.'},
+                        {username: 'GalaxyHunter', avatar: avatarUrls[2], text: 'The color gradient is spectacular. Classic example of a spiral galaxy.'}
+                    ]
+                },
+                {
+                    _id: 'post2',
+                    username: 'CosmicVoyager',
+                    userId: 'user2',
+                    avatar: avatarUrls[1],
+                    timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+                    imageUrl: 'https://images.unsplash.com/photo-1539321908154-04927596764d?w=500',
+                    prediction: 'The image shows an elliptical galaxy. These galaxies appear as smooth, featureless ellipsoidal shapes without spiral arms or distinctive features. The predominantly yellow/reddish color suggests an older stellar population with little ongoing star formation. Based on its apparent shape, it could be classified as an E3 or E4 elliptical.',
+                    likes: 29,
+                    comments: [
+                        {username: 'StarGazer', avatar: avatarUrls[3], text: 'The lack of structure is fascinating. Classic elliptical!'}
+                    ]
+                },
+                {
+                    _id: 'post3',
+                    username: 'MilkyWayExplorer',
+                    userId: 'user3',
+                    avatar: avatarUrls[2],
+                    timestamp: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+                    imageUrl: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=500',
+                    prediction: 'This is a barred spiral galaxy, identifiable by the distinctive linear bar-like structure crossing through the galactic center, with spiral arms extending from the ends of the bar. The bar is composed of stars and often drives gas inward to the galactic center, potentially fueling a central black hole.',
+                    likes: 56,
+                    comments: [
+                        {username: 'NebulaHunter', avatar: avatarUrls[4], text: 'The bar structure is so clear in this one!'},
+                        {username: 'AstroExplorer', avatar: avatarUrls[1], text: 'I wonder how the gas flows affect star formation along the bar...'}
+                    ]
+                },
+                {
+                    _id: 'post4',
+                    username: 'DeepSpaceNavigator',
+                    userId: 'user4',
+                    avatar: avatarUrls[3],
+                    timestamp: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
+                    imageUrl: 'https://images.unsplash.com/photo-1465101162946-4377e57745c3?w=500',
+                    prediction: 'The image reveals a lenticular galaxy (S0 type), which has features of both spiral and elliptical galaxies. It has a pronounced central bulge like ellipticals, but also contains a disk without spiral arms. The lack of blue regions suggests minimal recent star formation.',
+                    likes: 38,
+                    comments: [
+                        {username: 'StarGazer', avatar: avatarUrls[3], text: 'Fascinating transitional form between spiral and elliptical!'}
+                    ]
+                },
+                {
+                    _id: 'post5',
+                    username: 'GalacticPioneer',
+                    userId: 'user5',
+                    avatar: avatarUrls[4],
+                    timestamp: new Date(Date.now() - 432000000).toISOString(), // 5 days ago
+                    imageUrl: 'https://images.unsplash.com/photo-1454789548928-9efd52dc4031?w=500',
+                    prediction: 'This appears to be an irregular galaxy with no definite shape. Irregular galaxies like this often result from gravitational interactions with nearby galaxies, causing distorted structures. The blue patches visible throughout suggest areas of active star formation triggered by these interactions.',
+                    likes: 67,
+                    comments: [
+                        {username: 'CosmicVoyager', avatar: avatarUrls[1], text: 'The chaos of these systems is beautiful in its own way!'},
+                        {username: 'NebulaHunter', avatar: avatarUrls[4], text: 'I wonder what it would look like from a planet inside this galaxy...'}
+                    ]
+                },
+                {
+                    _id: 'post6',
+                    username: 'StardustCollector',
+                    userId: 'user6',
+                    avatar: avatarUrls[0],
+                    timestamp: new Date(Date.now() - 518400000).toISOString(), // 6 days ago
+                    imageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=500',
+                    prediction: 'This fascinating image shows what appears to be a ring galaxy, where a compact galaxy has passed through a larger one, creating a ripple effect that forms a ring-like structure. The bright blue regions in the ring indicate active star formation triggered by the collision, while the yellow center contains older stars.',
+                    likes: 83,
+                    comments: [
+                        {username: 'AstroExplorer', avatar: avatarUrls[1], text: 'Ring galaxies are so rare! Amazing find!'},
+                        {username: 'GalaxyHunter', avatar: avatarUrls[2], text: 'The collision physics here must be incredible to witness up close.'},
+                        {username: 'CosmicVoyager', avatar: avatarUrls[1], text: 'I wonder how long these structures remain stable before dissipating...'}
+                    ]
+                }
+            ];
+        }
+
+        // Open post modal
+        function openPostModal(postId, focusComments = false) {
+            // If user is not logged in, prompt to login first
+            if (!currentUser) {
+                openLoginModal();
+                return;
+            }
+            
+            const post = findPostData(postId);
+            if (!post) {
+                console.error('Post not found:', postId);
+                return;
+            }
+            
+            const postDate = new Date(post.timestamp).toLocaleDateString('en-US', {
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Create modal content
+            modalContent.innerHTML = `
+                <div class="mb-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-yellow-500 rounded-full neu-brutal-sm w-12 h-12 overflow-hidden">
+                            <img src="${post.avatar || avatarOptions[0].getAttribute('data-avatar')}" alt="${post.username}" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-yellow-400">${post.username}</h3>
+                            <p class="text-blue-300 text-sm">Discovered on ${postDate}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button class="modal-like-btn flex items-center gap-2 lego-btn px-3 py-2 rounded-lg bg-pink-600 text-white">
+                            <i class="bi bi-heart-fill"></i>
+                            <span class="modal-likes-count">${post.likes}</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <img src="${post.imageUrl}" alt="Galaxy" class="w-full max-h-96 object-contain rounded-lg neu-brutal mb-4">
+                    <div class="bg-slate-800 p-4 rounded-lg mt-3">
+                        <div class="flex items-start">
+                            <div class="mr-3 mt-1">
+                                <i class="bi bi-robot text-2xl text-blue-400"></i>
+                            </div>
+                            <div class="text-blue-200">
+                                <div class="text-sm text-blue-400 mb-1">Galamo AI Analysis:</div>
+                                <p class="text-lg">${post.prediction}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="border-t-2 border-gray-700 pt-4 mt-4">
+                    <h4 class="text-xl font-bold text-yellow-400 mb-3">
+                        <i class="bi bi-chat-square-text-fill mr-2"></i>
+                        Space Explorer Comments (${post.comments?.length || 0})
+                    </h4>
+                    
+                    <div class="space-y-4 mb-6" id="modal-comments">
+                        ${post.comments && post.comments.length > 0 ? 
+                            post.comments.map(comment => `
+                                <div class="bg-slate-800 p-3 rounded-lg neu-brutal-sm">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <div class="w-8 h-8 rounded-full overflow-hidden">
+                                            <img src="${comment.avatar || avatarOptions[Math.floor(Math.random() * avatarOptions.length)].getAttribute('data-avatar')}" alt="${comment.username}" class="w-full h-full object-cover">
+                                        </div>
+                                        <strong class="text-yellow-400">${comment.username}</strong>
+                                    </div>
+                                    <p class="text-blue-200 ml-10">${comment.text}</p>
+                                </div>
+                            `).join('') : 
+                            `<div class="text-center py-4 text-blue-300">
+                                <i class="bi bi-chat-square text-3xl mb-2 block"></i>
+                                No comments yet. Be the first to comment!
+                            </div>`
+                        }
+                    </div>
+                    
+                    <form id="modal-comment-form" class="flex gap-2">
+                        <input type="text" placeholder="Add your observation about this galaxy..." class="flex-1 p-3 lego-input rounded-lg" required>
+                        <button type="submit" class="lego-btn bg-green-600 text-white px-4 py-2 rounded-lg">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </form>
+                </div>
+            `;
+            
+            // Add event listeners to modal elements
+            document.querySelector('.modal-like-btn').addEventListener('click', () => likePost(postId));
+            
+            const commentForm = document.getElementById('modal-comment-form');
+            commentForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                addComment(postId, e.target.querySelector('input').value);
+            });
+            
+            // Show modal
+            postModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            
+            // Focus on comments section if requested
+            if (focusComments) {
+                setTimeout(() => {
+                    const commentsSection = document.getElementById('modal-comments');
+                    commentsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    document.querySelector('#modal-comment-form input').focus();
+                }, 300);
+            }
+        };
+        
+        // Add comment functionality
+        function addComment(postId, commentText) {
+            if (!currentUser) {
+                openLoginModal();
+                return;
+            }
+            
+            if (!commentText.trim()) return;
+            
+            const commentsContainer = document.getElementById('modal-comments');
+            const commentCount = document.querySelector('#modal-content h4.text-yellow-400');
+            
+            // Clear "no comments" message if it exists
+            if (commentsContainer.innerHTML.includes('No comments yet')) {
+                commentsContainer.innerHTML = '';
+            }
+            
+            // Create comment element
+            const commentElement = document.createElement('div');
+            commentElement.className = 'bg-slate-800 p-3 rounded-lg neu-brutal-sm animate-pulse';
+            commentElement.innerHTML = `
+                <div class="flex items-center gap-2 mb-1">
+                    <div class="w-8 h-8 rounded-full overflow-hidden">
+                        <img src="${currentUser.avatar}" alt="${currentUser.username}" class="w-full h-full object-cover">
+                    </div>
+                    <strong class="text-yellow-400">${currentUser.username}</strong>
+                </div>
+                <p class="text-blue-200 ml-10">${commentText}</p>
+            `;
+            commentsContainer.appendChild(commentElement);
+            
+            // Update comment counts
+            const currentCount = parseInt(commentCount.textContent.match(/\((\d+)\)/)[1]);
+            const newCount = currentCount + 1;
+            commentCount.innerHTML = `
+                <i class="bi bi-chat-square-text-fill mr-2"></i>
+                Space Explorer Comments (${newCount})
+            `;
+            
+            // Update comment count in card view too
+            const postCard = document.querySelector(`.lego-card[data-post-id="${postId}"]`);
+            if (postCard) {
+                const cardCommentCount = postCard.querySelector('.comments-count');
+                cardCommentCount.textContent = newCount;
+            }
+            
+            // Clear input and focus
+            const commentInput = document.querySelector('#modal-comment-form input');
+            commentInput.value = '';
+            commentInput.focus();
+            
+            // Remove animation class after a delay
+            setTimeout(() => {
+                commentElement.classList.remove('animate-pulse');
+            }, 1000);
+            
+            // Scroll to the new comment
+            commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        closeModal.addEventListener('click', () => {
+            postModal.classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Re-enable scrolling
+        });
+        
+        // Close modal when clicking outside the content
+        postModal.addEventListener('click', (e) => {
+            if (e.target === postModal) {
+                postModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Initialize the page
+        window.addEventListener('DOMContentLoaded', () => {
+            loadPosts();
+        });
+    </script>
+</body>
+</html>
