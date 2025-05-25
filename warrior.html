@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lego Space Adventure</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: black;
+    }
+
+    #viewport {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #world {
+      width: 100000px;
+      height: 100000px;
+      background-image: url("images/bg.jpg");
+      background-repeat: repeat;
+      background-size: 300px 200px;
+      position: absolute;
+    }
+
+    .hero {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background: url('images/hero.png') no-repeat center;
+      background-size: contain;
+      z-index: 10;
+    }
+
+    .galaxy {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background-size: cover;
+      background-repeat: no-repeat;
+      cursor: pointer;
+    }
+
+    .label {
+      display: none;
+    }
+
+    .asteroid {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background-size: cover;
+      z-index: 5;
+    }
+
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 1.2rem;
+      text-shadow: 2px 2px 5px black;
+      z-index: 100;
+      display: flex;
+      gap: 20px;
+    }
+
+    .hearts {
+      display: flex;
+      gap: 5px;
+    }
+
+    .heart {
+      width: 20px;
+      height: 20px;
+      background: red;
+      clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 50% 75%, 20% 100%, 0% 35%);
+    }
+
+    .popup {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      color: black;
+      padding: 20px;
+      border: 4px solid black;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      z-index: 200;
+      max-width: 300px;
+      box-shadow: 6px 6px 0px black;
+      display: none;
+    }
+
+    .popup h3 {
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    .popup ul {
+      padding-left: 20px;
+    }
+
+    .burst {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: url("images/burst.gif") no-repeat center;
+      background-size: contain;
+      pointer-events: none;
+      z-index: 50;
+    }
+  </style>
+</head>
+<body>
+  <div id="viewport">
+    <div id="hud">
+      <div>Score: <span id="score">0</span></div>
+      <div class="hearts" id="hearts"></div>
+    </div>
+
+    <div class="popup" id="popup"></div>
+
+    <div id="world">
+      <div class="hero" id="hero"></div>
+
+      <!-- Galaxies -->
+        <!-- Existing galaxies (3 already present) -->
+<div class="galaxy" data-name="Whirlpool Galaxy" data-info="A classic spiral galaxy located 23 million light-years away." data-type="Spiral Galaxy" style="top:400px; left:1000px; background-image:url('images/whirl.jpeg');"></div>
+<div class="galaxy" data-name="Andromeda" data-info="Closest large galaxy to the Milky Way." data-type="Spiral Galaxy" style="top:1200px; left:1800px; background-image:url('images/andro.jpeg');"></div>
+<div class="galaxy" data-name="Sombrero Galaxy" data-info="It has a bright nucleus and a large central bulge." data-type="Unbarred Spiral" style="top:1600px; left:700px; background-image:url('images/galaxy_sombrero.png');"></div>
+
+<!-- Additional galaxies -->
+<div class="galaxy" data-name="Pinwheel Galaxy" data-info="A face-on spiral galaxy in Ursa Major." data-type="Spiral Galaxy" style="top:900px; left:2300px; background-image:url('images/galaxy1.jpg');"></div>
+<div class="galaxy" data-name="Cartwheel Galaxy" data-info="A lenticular galaxy with a ring-like structure." data-type="Ring Galaxy" style="top:2500px; left:3000px; background-image:url('images/galaxy2.jpg');"></div>
+<div class="galaxy" data-name="Messier 87" data-info="Contains a supermassive black hole." data-type="Elliptical Galaxy" style="top:3300px; left:1800px; background-image:url('images/galaxy3.jpg');"></div>
+<div class="galaxy" data-name="Centaurus A" data-info="A peculiar galaxy with strong radio emissions." data-type="Lenticular Galaxy" style="top:2900px; left:900px; background-image:url('images/galaxy4.jpg');"></div>
+<div class="galaxy" data-name="Tadpole Galaxy" data-info="Known for its long tail of stars." data-type="Spiral Galaxy" style="top:1400px; left:3200px; background-image:url('images/galaxy5.jpg');"></div>
+<div class="galaxy" data-name="NGC 1300" data-info="A beautiful barred spiral galaxy." data-type="Barred Spiral" style="top:1700px; left:2500px; background-image:url('images/galaxy6.jpg');"></div>
+<div class="galaxy" data-name="NGC 6744" data-info="Similar in structure to our Milky Way." data-type="Spiral Galaxy" style="top:2100px; left:1900px; background-image:url('images/galaxy7.jpg');"></div>
+<div class="galaxy" data-name="NGC 4414" data-info="A flocculent spiral galaxy." data-type="Spiral Galaxy" style="top:1000px; left:3600px; background-image:url('images/galaxy8.jpg');"></div>
+<div class="galaxy" data-name="IC 1101" data-info="One of the largest galaxies known." data-type="Elliptical Galaxy" style="top:3700px; left:1500px; background-image:url('images/galaxy9.jpg');"></div>
+<div class="galaxy" data-name="NGC 4038" data-info="Part of the Antennae Galaxies." data-type="Interacting Galaxies" style="top:800px; left:1200px; background-image:url('images/galaxy10.jpg');"></div>
+<div class="galaxy" data-name="NGC 4039" data-info="Other half of the Antennae Galaxies." data-type="Interacting Galaxies" style="top:850px; left:1250px; background-image:url('images/galaxy11.jpg');"></div>
+<div class="galaxy" data-name="NGC 1427A" data-info="A dwarf irregular galaxy in Fornax Cluster." data-type="Irregular Galaxy" style="top:1300px; left:600px; background-image:url('images/galaxy12.jpg');"></div>
+<div class="galaxy" data-name="NGC 2442" data-info="A distorted spiral galaxy." data-type="Distorted Spiral" style="top:500px; left:2200px; background-image:url('images/galaxy13.jpg');"></div>
+<div class="galaxy" data-name="NGC 5866" data-info="Has characteristics of both spiral and elliptical." data-type="Lenticular Galaxy" style="top:200px; left:1600px; background-image:url('images/galaxy14.jpg');"></div>
+<div class="galaxy" data-name="NGC 488" data-info="An unbarred spiral galaxy in Pisces." data-type="Spiral Galaxy" style="top:1700px; left:800px; background-image:url('images/galaxy15.jpg');"></div>
+<div class="galaxy" data-name="NGC 5248" data-info="A bright spiral galaxy in the Bootes constellation." data-type="Spiral Galaxy" style="top:2600px; left:1700px; background-image:url('images/galaxy16.jpg');"></div>
+<div class="galaxy" data-name="NGC 1672" data-info="Features a very strong bar structure." data-type="Barred Spiral" style="top:3000px; left:3500px; background-image:url('images/galaxy17.jpg');"></div>
+<div class="galaxy" data-name="NGC 253" data-info="Also known as the Sculptor Galaxy." data-type="Starburst Galaxy" style="top:2700px; left:1300px; background-image:url('images/galaxy18.jpg');"></div>
+<div class="galaxy" data-name="NGC 3184" data-info="Located in the constellation Ursa Major." data-type="Spiral Galaxy" style="top:2400px; left:2100px; background-image:url('images/galaxy19.jpg');"></div>
+
+    </div>
+  </div>
+
+  <script>
+    const world = document.getElementById("world");
+    const hero = document.getElementById("hero");
+    const galaxies = document.querySelectorAll(".galaxy");
+    const scoreEl = document.getElementById("score");
+    const heartsEl = document.getElementById("hearts");
+    const popup = document.getElementById("popup");
+
+    let score = 0;
+    let lives = 3;
+    let heroX = 1500;
+    let heroY = 1000;
+    const speed = 10;
+    const asteroids = [];
+    const asteroidImages = ["a1.png", "a2.png", "a3.png"];
+
+    function update() {
+      hero.style.left = heroX + 'px';
+      hero.style.top = heroY + 'px';
+      world.style.left = (-heroX + window.innerWidth / 2 - 25) + 'px';
+      world.style.top = (-heroY + window.innerHeight / 2 - 25) + 'px';
+    }
+
+    function updateHearts() {
+      heartsEl.innerHTML = '';
+      for (let i = 0; i < lives; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heartsEl.appendChild(heart);
+      }
+    }
+
+    function showPopup(name, info, type) {
+      popup.innerHTML = `
+        <h3>${name}</h3>
+        <p>${info}</p>
+        <ul>
+          <li><strong>Name:</strong> ${name}</li>
+          <li><strong>Type:</strong> ${type}</li>
+        </ul>
+      `;
+      popup.style.display = 'block';
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, 4000);
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp") heroY -= speed;
+      if (e.key === "ArrowDown") heroY += speed;
+      if (e.key === "ArrowLeft") heroX -= speed;
+      if (e.key === "ArrowRight") heroX += speed;
+      update();
+    });
+
+    galaxies.forEach(g => {
+      g.addEventListener("click", () => {
+        if (g.style.visibility !== 'hidden') {
+          g.style.visibility = 'hidden';
+          score++;
+          scoreEl.textContent = score;
+          const name = g.dataset.name;
+          const info = g.dataset.info;
+          const type = g.dataset.type;
+          showPopup(name, info, type);
+        }
+      });
+    });
+
+    function spawnAsteroid() {
+      const asteroid = document.createElement("div");
+      asteroid.classList.add("asteroid");
+
+      const randomImg = asteroidImages[Math.floor(Math.random() * asteroidImages.length)];
+      asteroid.style.backgroundImage = `url('images/${randomImg}')`;
+
+      asteroid.style.top = `${Math.random() * 2000}px`;
+      asteroid.style.left = `${Math.random() * 3000}px`;
+      world.appendChild(asteroid);
+
+      const dx = (Math.random() - 0.5) * 2;
+      const dy = (Math.random() - 0.5) * 2;
+      asteroids.push({ el: asteroid, dx, dy });
+    }
+
+    function showBurst(x, y) {
+      const burst = document.createElement("div");
+      burst.classList.add("burst");
+      burst.style.left = x + 'px';
+      burst.style.top = y + 'px';
+      world.appendChild(burst);
+      setTimeout(() => burst.remove(), 800);
+    }
+
+    function updateAsteroids() {
+      asteroids.forEach((a, i) => {
+        let x = parseFloat(a.el.style.left);
+        let y = parseFloat(a.el.style.top);
+        x += a.dx * 4;
+        y += a.dy * 4;
+        a.el.style.left = x + "px";
+        a.el.style.top = y + "px";
+
+        if (Math.abs(x - heroX) < 40 && Math.abs(y - heroY) < 40) {
+          if (!a.hit) {
+            a.hit = true;
+            lives--;
+            updateHearts();
+            showBurst(heroX, heroY);
+            a.el.remove();
+            asteroids.splice(i, 1);
+            if (lives <= 0) {
+              alert("Game Over! Final Score: " + score);
+              location.reload();
+            }
+          }
+        }
+      });
+    }
+
+    for (let i = 0; i < 10; i++) {
+      spawnAsteroid();
+    }
+
+    setInterval(spawnAsteroid, 1000);
+    setInterval(updateAsteroids, 100);
+    update();
+    updateHearts();
+  </script>
+</body>
+</html>

@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GaldeX - Neubrutalism Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'VT323', monospace;
+            background-color: #010617;
+            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3Ccircle cx='13' cy='13' r='1'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        h1, h2, h3, .pixel-font {
+            font-family: 'Press Start 2P', cursive;
+        }
+        
+        .neu-brutalism {
+            border: 4px solid #000;
+            box-shadow: 6px 6px 0px #000;
+            transition: all 0.2s ease;
+        }
+        
+        .neu-brutalism:hover:not(.disabled) {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px #000;
+        }
+        
+        .neu-brutalism:active:not(.disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: 4px 4px 0px #000;
+        }
+        
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .glow {
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #6366f1; }
+            to { text-shadow: 0 0 20px #fff, 0 0 30px #6366f1, 0 0 40px #6366f1; }
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 1s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            from { opacity: 0.2; }
+            to { opacity: 1; }
+        }
+        
+        .galaxy-rotation {
+            animation: rotate 60s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .typing-effect {
+            overflow: hidden;
+            border-right: 2px solid #fff;
+            white-space: nowrap;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #fff }
+        }
+        
+        .code-editor {
+            font-family: monospace;
+            background: #1e1e1e;
+            color: #dcdcdc;
+            padding: 10px;
+            border-radius: 5px;
+            border: 4px solid #000;
+            box-shadow: 5px 5px 0px #000;
+        }
+        
+        .popup {
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .locked {
+            filter: grayscale(100%);
+            opacity: 0.5;
+        }
+        
+        .codex-entry {
+            transition: all 0.2s ease;
+        }
+        
+        .codex-entry:hover {
+            transform: translateX(5px);
+        }
+        
+        /* Brightness/contrast controls */
+        .slider-control {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #6366f1;
+            border: 2px solid #000;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #818cf8;
+        }
+
+        /* LEGO theme colors */
+        .lego-yellow {
+            background-color: #f6d500;
+        }
+        
+        .lego-red {
+            background-color: #e3000b;
+        }
+        
+        .lego-blue {
+            background-color: #006db7;
+        }
+        
+        .lego-green {
+            background-color: #00af4d;
+        }
+
+        .lego-button {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lego-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30%;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px 4px 0 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white p-4 overflow-x-hidden">
+    <!-- Star background decoration -->
+    <div id="stars-container" class="fixed top-0 left-0 w-full h-full -z-10"></div>
+
+    <!-- Header with Login/Signup -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-indigo-900/80 backdrop-blur-sm py-3 px-6 flex justify-between items-center neu-brutalism border-b-4 border-black">
+        <div class="flex items-center">
+            <img src="images/o.svg" alt="LEGO Spaceship Logo" class="w-10 h-10 mr-3">
+            <h1 class="text-xl sm:text-2xl glow">GaldeX</h1>
+        </div>
+        <div class="flex space-x-3">
+            <button onclick="toggleModal('login-modal')" class="lego-button neu-brutalism px-3 py-2 text-sm md:text-base lego-blue text-black hover:bg-blue-500">Login</button>
+            <button onclick="toggleModal('signup-modal')" class="lego-button neu-brutalism px-3 py-2 text-sm md:text-base lego-yellow text-black hover:bg-yellow-400">Sign Up</button>
+        </div>
+    </header>
+
+    <!-- Main container with margin for header -->
+    <div class="mt-20 container mx-auto">
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="min-h-[80vh] flex flex-col items-center justify-center py-10">
+            <h1 class="text-3xl md:text-5xl text-center mb-8 glow pixel-font">GaldeX</h1>
+            <div class="relative w-full max-w-2xl mx-auto mb-10">
+                <img src="images/spaceship.png" alt="LEGO Spaceship" class="galaxy-rotation">
+                 </div>
+            <div class="neu-brutalism bg-indigo-900 p-6 rounded-lg w-full max-w-lg mx-auto">
+                <p class="text-xl mb-6 text-center">Enter your name to begin the cosmic adventure!</p>
+                <input type="text" id="player-name-input" placeholder="ENTER YOUR NAME, EXPLORER" class="w-full p-4 mb-4 bg-black text-white neu-brutalism rounded text-center text-xl">
+                <button onclick="startGame()" class="w-full lego-button text-xl font-bold p-4 neu-brutalism rounded lego-red text-white hover:bg-red-600">START MISSION</button>
+            </div>
+
+            <!-- User Posts - Community Feed -->
+            <div class="w-full max-w-4xl mx-auto mt-16">
+                <h2 class="text-2xl mb-6 pixel-font text-center">RECENT GALAXY EXPLORATIONS</h2>
+                <div id="community-feed" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Sample posts will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Dashboard - Levels Selection -->
+        <div id="game-dashboard" class="hidden min-h-[80vh]">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl glow">Welcome, <span id="player-name-display" class="text-yellow-300">Explorer</span></h2>
+                    <p class="text-indigo-300 mt-2">Your mission: Preserve the knowledge of galaxies</p>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <div id="level-badge" class="neu-brutalism bg-indigo-800 p-3 rounded-lg"><i class="bi bi-stars"></i> Level: <span id="current-level">1</span>/5</div>
+                    <button onclick="toggleCodex()" class="neu-brutalism lego-green p-3 rounded-lg text-black"><i class="bi bi-journal-album"></i> Galaxy Codex</button>
+                    <button onclick="logoutUser()" class="neu-brutalism bg-red-600 p-3 rounded-lg"><i class="bi bi-box-arrow-right"></i> Log Out</button>
+                </div>
+            </div>
+
+            <!-- Levels Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                <!-- Level 1 -->
+                <div class="level-card neu-brutalism bg-gradient-to-br from-indigo-900 to-purple-900 p-5 rounded-lg" onclick="startLevel(1)">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl">Stage 1: First Contact</h3>
+                        <span class="bg-yellow-400 text-black px-2 py-1 rounded text-sm">UNLOCKED</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=800&auto=format" alt="Galaxy" class="w-full h-48 object-cover rounded mb-4 neu-brutalism">
+                    <p class="text-base mb-4">Meet Kairon and learn to classify galaxies through coding</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-indigo-300"><i class="bi bi-clock"></i> ~10 min</span>
+                        <span class="text-xs bg-indigo-700 px-2 py-1 rounded"><i class="bi bi-stars"></i> 100 points</span>
+                    </div>
+                </div>
+                
+                <!-- Level 2 -->
+                <div class="level-card neu-brutalism bg-gradient-to-br from-indigo-900 to-purple-900 p-5 rounded-lg locked" id="level-2-card" onclick="showLockedMessage(2)">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl">Stage 2: Dust Storm</h3>
+                        <span class="bg-gray-700 text-gray-300 px-2 py-1 rounded text-sm">LOCKED</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=800&auto=format" alt="Galaxy" class="w-full h-48 object-cover rounded mb-4 neu-brutalism">
+                    <p class="text-base mb-4">Navigate through the Andromeda dust storm</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-indigo-300"><i class="bi bi-clock"></i> ~15 min</span>
+                        <span class="text-xs bg-indigo-700 px-2 py-1 rounded"><i class="bi bi-stars"></i> 200 points</span>
+                    </div>
+                </div>
+                
+                <!-- Level 3 -->
+                <div class="level-card neu-brutalism bg-gradient-to-br from-indigo-900 to-purple-900 p-5 rounded-lg locked" id="level-3-card" onclick="showLockedMessage(3)">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl">Stage 3: Dark Matter Maze</h3>
+                        <span class="bg-gray-700 text-gray-300 px-2 py-1 rounded text-sm">LOCKED</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=800&auto=format" alt="Galaxy" class="w-full h-48 object-cover rounded mb-4 neu-brutalism">
+                    <p class="text-base mb-4">Solve the gravitational lensing puzzle</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-indigo-300"><i class="bi bi-clock"></i> ~20 min</span>
+                        <span class="text-xs bg-indigo-700 px-2 py-1 rounded"><i class="bi bi-stars"></i> 300 points</span>
+                    </div>
+                </div>
+                
+                <!-- Level 4 -->
+                <div class="level-card neu-brutalism bg-gradient-to-br from-indigo-900 to-purple-900 p-5 rounded-lg locked" id="level-4-card" onclick="showLockedMessage(4)">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl">Stage 4: The Void</h3>
+                        <span class="bg-gray-700 text-gray-300 px-2 py-1 rounded text-sm">LOCKED</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1580154140865-3bc5be9f5898?q=80&w=800&auto=format" alt="Black Hole" class="w-full h-48 object-cover rounded mb-4 neu-brutalism">
+                    <p class="text-base mb-4">Discover black holes and estimate their mass</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-indigo-300"><i class="bi bi-clock"></i> ~20 min</span>
+                        <span class="text-xs bg-indigo-700 px-2 py-1 rounded"><i class="bi bi-stars"></i> 400 points</span>
+                    </div>
+                </div>
+                
+                <!-- Level 5 -->
+                <div class="level-card neu-brutalism bg-gradient-to-br from-indigo-900 to-purple-900 p-5 rounded-lg locked" id="level-5-card" onclick="showLockedMessage(5)">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl">Stage 5: Final Constellation</h3>
+                        <span class="bg-gray-700 text-gray-300 px-2 py-1 rounded text-sm">LOCKED</span>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1566345984367-2530ca736964?q=80&w=800&auto=format" alt="Constellation" class="w-full h-48 object-cover rounded mb-4 neu-brutalism">
+                    <p class="text-base mb-4">Create your own celestial legacy</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-indigo-300"><i class="bi bi-clock"></i> ~25 min</span>
+                        <span class="text-xs bg-indigo-700 px-2 py-1 rounded"><i class="bi bi-stars"></i> 500 points</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 1: First Contact -->
+        <div id="stage-1" class="hidden min-h-[80vh]">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Main gameplay area -->
+                <div class="neu-brutalism bg-gradient-to-br from-indigo-900 to-purple-900 p-6 rounded-lg w-full lg:w-2/3">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl">Stage 1: First Contact</h2>
+                        <span class="bg-yellow-400 text-black px-2 py-1 rounded text-sm">Galaxy <span id="current-galaxy">1</span>/3</span>
+                    </div>
+                    
+                    <!-- Galaxy Classification Area -->
+                    <div class="mb-6">
+                        <div class="relative">
+                            <img id="galaxy-image" src="../new.png" alt="Galaxy to classify" class="w-full h-64 object-cover rounded mb-4 neu-brutalism">
+                            <div id="classification-result" class="absolute top-4 right-4 hidden bg-green-500 text-white px-3 py-1 rounded">Correct!</div>
+                        </div>
+                        
+                        <div class="neu-brutalism bg-black p-4 rounded mb-6">
+                            <p class="text-indigo-300 mb-2">Write code to classify the galaxy type:</p>
+                            <textarea id="code-input" class="w-full h-32 code-editor mb-3" placeholder="// Write your classification code here
+from galamo import galaxy_morph
+galaxy_morph('')
+"></textarea>
+                            <div class="flex justify-end">
+                                <button onclick="runCode()" class="neu-brutalism lego-green p-2 rounded text-black"><i class="bi bi-play-fill"></i> Run Code</button>
+                                <br>
+                                 </div>
+                                 <div id="output" style="margin-top: 20px; font-weight: bold; color: white;"></div>
+                           
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-3">
+                            <button onclick="classifyGalaxy('Spiral')" class="neu-brutalism lego-blue p-3 rounded text-black">Spiral</button>
+                            <button onclick="classifyGalaxy('Elliptical')" class="neu-brutalism lego-yellow p-3 rounded text-black">Elliptical</button>
+                            <button onclick="classifyGalaxy('Irregular')" class="neu-brutalism lego-red p-3 rounded text-black">Irregular</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-6">
+                        <button onclick="backToDashboard()" class="neu-brutalism bg-gray-700 p-3 rounded"><i class="bi bi-arrow-left"></i> Back</button>
+                        <button onclick="skipLevel(1)" class="neu-brutalism bg-yellow-400 p-3 rounded text-black"><i class="bi bi-skip-forward-fill"></i> NEXT</button>
+                        <button id="complete-level-btn" onclick="completeLevel(1)" class="neu-brutalism lego-green p-3 rounded text-black disabled"><i class="bi bi-check-lg"></i> Complete</button>
+                    </div>
+                    
+                </div>
+                
+                <!-- Dialogue panel -->
+                <div class="neu-brutalism bg-gradient-to-br from-indigo-800 to-indigo-950 p-6 rounded-lg w-full lg:w-1/3">
+                    <h3 class="text-xl mb-4 flex items-center">
+                        <i class="bi bi-chat-square-text-fill mr-2"></i> Mission Log
+                    </h3>
+                    <div id="dialogue-container" class="space-y-6 max-h-96 overflow-y-auto pr-2">
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_starpad.png" alt="Nova" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-blue-400 mb-1">Nova:</p>
+                                <p class="bg-blue-950 p-3 rounded-lg">"Whoa… so many stars. How do I even begin?"</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_inhale.png" alt="Kairon" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-green-400 mb-1">Kairon:</p>
+                                <p class="bg-green-950 p-3 rounded-lg">"Observe their shape, young explorer. Form defines destiny in the universe. Let me guide you in identifying three main galaxy types. BRUHHH! write galaxy.png hope it help!"</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_inhale.png" alt="Kairon" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-green-400 mb-1">Kairon:</p>
+                                <p class="bg-green-950 p-3 rounded-lg">"Spiral galaxies have distinctive arms, like our Milky Way. Elliptical galaxies are more oval-shaped with no clear structure. Irregular galaxies have no definite shape at all."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_inhale.png" alt="Kairon" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-green-400 mb-1">Kairon:</p>
+                                <p class="bg-green-950 p-3 rounded-lg">"You can write code to classify them, or use the buttons. Classify all three galaxies to continue our mission."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 2: Dust Storm in Andromeda -->
+        <div id="stage-2" class="hidden min-h-[80vh]">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Main gameplay area -->
+                <div class="neu-brutalism bg-gradient-to-br from-indigo-900 to-purple-900 p-6 rounded-lg w-full lg:w-2/3">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl">Stage 2: Dust Storm</h2>
+                        <span class="bg-yellow-400 text-black px-2 py-1 rounded text-sm">Image <span id="current-dust-image">1</span>/3</span>
+                    </div>
+                    
+                    <!-- Image Adjustment Area -->
+                    <div class="mb-6">
+                        <div class="relative">
+                            <img id="dusty-image" src="https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=1200&auto=format&brightness=-30&contrast=-20" alt="Dusty galaxy" class="w-full h-64 object-cover rounded mb-4 neu-brutalism" style="filter: brightness(0.7) contrast(0.8);">
+                            <div id="dust-clear-indicator" class="absolute top-4 right-4 hidden bg-green-500 text-white px-3 py-1 rounded">80% Clear!</div>
+                        </div>
+                        
+                        <div class="neu-brutalism bg-black p-4 rounded mb-6">
+                            <p class="text-indigo-300 mb-3">Adjust image parameters to clear the dust:</p>
+                            
+                            <div class="mb-4">
+                                <label for="brightness-slider" class="flex justify-between mb-1">
+                                    <span>Brightness</span>
+                                    <span id="brightness-value">50%</span>
+                                </label>
+                                <input type="range" id="brightness-slider" class="slider-control" min="0" max="100" value="50" oninput="adjustImage()">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="contrast-slider" class="flex justify-between mb-1">
+                                    <span>Contrast</span>
+                                    <span id="contrast-value">50%</span>
+                                </label>
+                                <input type="range" id="contrast-slider" class="slider-control" min="0" max="100" value="50" oninput="adjustImage()">
+                            </div>
+                            
+                            <div>
+                                <label for="filter-select" class="mb-1">Filter Type</label>
+                                <select id="filter-select" class="w-full p-2 bg-gray-900 rounded border border-gray-700" onchange="adjustImage()">
+                                    <option value="none">None</option>
+                                    <option value="infrared">Infrared</option>
+                                    <option value="uv">Ultraviolet</option>
+                                    <option value="xray">X-ray</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center">
+                            <button onclick="checkImageClarity()" class="neu-brutalism lego-yellow p-3 rounded text-black"><i class="bi bi-check2-circle"></i> Analyze Clarity</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-6">
+                        <button onclick="backToDashboard()" class="neu-brutalism bg-gray-700 p-3 rounded"><i class="bi bi-arrow-left"></i> Back</button>
+                        <button onclick="skipLevel(2)" class="neu-brutalism bg-yellow-400 p-3 rounded text-black"><i class="bi bi-skip-forward-fill"></i> NEXT</button>
+                        <button id="complete-level-btn" onclick="completeLevel(1)" class="neu-brutalism lego-green p-3 rounded text-black disabled"><i class="bi bi-check-lg"></i> Complete</button>
+                    </div>
+                    
+                </div>
+                
+                <!-- Dialogue panel -->
+                <div class="neu-brutalism bg-gradient-to-br from-indigo-800 to-indigo-950 p-6 rounded-lg w-full lg:w-1/3">
+                    <h3 class="text-xl mb-4 flex items-center">
+                        <i class="bi bi-chat-square-text-fill mr-2"></i> Mission Log
+                    </h3>
+                    <div id="dialogue-container-2" class="space-y-6 max-h-96 overflow-y-auto pr-2">
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_starpad.png" alt="Nova" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-blue-400 mb-1">Nova:</p>
+                                <p class="bg-blue-950 p-3 rounded-lg">"I can barely see through all this cosmic dust! The Andromeda sector is so hazy."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_inhale.png" alt="Kairon" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-green-400 mb-1">Kairon:</p>
+                                <p class="bg-green-950 p-3 rounded-lg">"Cosmic dust obscures many galactic wonders. But with the right tools, we can see through it. Try adjusting the brightness and contrast."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_inhale.png" alt="Kairon" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-green-400 mb-1">Kairon:</p>
+                                <p class="bg-green-950 p-3 rounded-lg">"Different wavelengths can also reveal hidden features. The infrared filter is especially good at penetrating dust clouds."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_starpad.png" alt="Nova" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-blue-400 mb-1">Nova:</p>
+                                <p class="bg-blue-950 p-3 rounded-lg">"I'll need to reach at least 80% clarity to properly analyze each galaxy. Let's see what's hiding in the dust!"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 3: Dark Matter Maze -->
+        <div id="stage-3" class="hidden min-h-[80vh]">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Main gameplay area -->
+                <div class="neu-brutalism bg-gradient-to-br from-indigo-900 to-purple-900 p-6 rounded-lg w-full lg:w-2/3">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl">Stage 3: Dark Matter Maze</h2>
+                        <span class="bg-yellow-400 text-black px-2 py-1 rounded text-sm">Path Progress: <span id="path-progress">0</span>/5</span>
+                    </div>
+                    
+                    <!-- Gravitational Lensing Maze -->
+                    <div class="mb-6">
+                        <div class="relative">
+                            <canvas id="maze-canvas" width="600" height="400" class="w-full h-80 rounded neu-brutalism bg-black"></canvas>
+                            <div id="maze-complete" class="absolute top-4 right-4 hidden bg-green-500 text-white px-3 py-1 rounded">Path Complete!</div>
+                        </div>
+                        
+                        <div class="neu-brutalism bg-black p-4 rounded my-6">
+                            <p class="text-indigo-300 mb-3">Connect the lensed stars to find your path:</p>
+                            <p class="text-sm text-gray-400 mb-3">1. Click on a star to select it</p>
+                            <p class="text-sm text-gray-400 mb-3">2. Connect it to nearby stars by clicking them</p>
+                            <p class="text-sm text-gray-400 mb-3">3. Find the correct path through the gravitational distortion</p>
+                            <div class="flex justify-center mt-4">
+                                <button onclick="resetMaze()" class="neu-brutalism bg-indigo-700 p-2 rounded"><i class="bi bi-arrow-repeat"></i> Reset Path</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-6">
+                        <button onclick="backToDashboard()" class="neu-brutalism bg-gray-700 p-3 rounded"><i class="bi bi-arrow-left"></i> Back</button>
+                        <button onclick="skipLevel(3)" class="neu-brutalism bg-yellow-400 p-3 rounded text-black"><i class="bi bi-skip-forward-fill"></i> NEXT</button>
+                        <button id="complete-level-btn" onclick="completeLevel(1)" class="neu-brutalism lego-green p-3 rounded text-black disabled"><i class="bi bi-check-lg"></i> Complete</button>
+                    </div>
+                    
+                </div>
+                
+                <!-- Dialogue panel -->
+                <div class="neu-brutalism bg-gradient-to-br from-indigo-800 to-indigo-950 p-6 rounded-lg w-full lg:w-1/3">
+                    <h3 class="text-xl mb-4 flex items-center">
+                        <i class="bi bi-chat-square-text-fill mr-2"></i> Mission Log
+                    </h3>
+                    <div id="dialogue-container-3" class="space-y-6 max-h-96 overflow-y-auto pr-2">
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_starpad.png" alt="Nova" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-blue-400 mb-1">Nova:</p>
+                                <p class="bg-blue-950 p-3 rounded-lg">"Space is bending? Are my sensors broken?"</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_inhale.png" alt="Kairon" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-green-400 mb-1">Kairon:</p>
+                                <p class="bg-green-950 p-3 rounded-lg">"No, child. This is gravity's art — mass warps space. Welcome to the maze."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_inhale.png" alt="Kairon" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-green-400 mb-1">Kairon:</p>
+                                <p class="bg-green-950 p-3 rounded-lg">"What you're seeing is gravitational lensing. Massive objects like galaxies bend light passing near them, creating these distorted images."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_starpad.png" alt="Nova" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-blue-400 mb-1">Nova:</p>
+                                <p class="bg-blue-950 p-3 rounded-lg">"So I need to trace the true path through this distortion? It's like a cosmic puzzle!"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 4: The Void -->
+        <div id="stage-4" class="hidden min-h-[80vh]">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Main gameplay area -->
+                <div class="neu-brutalism bg-gradient-to-br from-indigo-900 to-purple-900 p-6 rounded-lg w-full lg:w-2/3">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl">Stage 4: The Void</h2>
+                        <span class="bg-yellow-400 text-black px-2 py-1 rounded text-sm">Black Holes: <span id="black-holes-found">0</span>/3</span>
+                    </div>
+                    
+                    <!-- Black Hole Analysis -->
+                    <div class="mb-6">
+                        <div class="relative">
+                            <img id="black-hole-image" src="bh.png" alt="Galaxy with black hole" class="w-full h-64 object-cover rounded mb-4 neu-brutalism">
+                            <div id="black-hole-result" class="absolute top-4 right-4 hidden bg-green-500 text-white px-3 py-1 rounded">Black Hole Confirmed!</div>
+                        </div>
+                        
+                        <div class="neu-brutalism bg-black p-4 rounded mb-6">
+                            <p class="text-indigo-300 mb-3">Analyze the data to estimate black hole mass:</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label for="brightness-peak" class="block mb-1">Brightness Peak (L)</label>
+                                    <input type="number" id="brightness-peak" class="w-full p-2 bg-gray-900 rounded border border-gray-700" placeholder="e.g., 4.2e38">
+                                </div>
+                                <div>
+                                    <label for="redshift-value" class="block mb-1">Redshift (z)</label>
+                                    <input type="number" id="redshift-value" class="w-full p-2 bg-gray-900 rounded border border-gray-700" placeholder="e.g., 0.158">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block mb-1">Formula</label>
+                                <div class="bg-gray-900 p-3 rounded text-center">
+                                    log<sub>10</sub>(M<sub>BH</sub>) = 0.5·log<sub>10</sub>(L) + 0.9·z + 6.2
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="mass-result" class="block mb-1">Calculated Mass (log<sub>10</sub> M<sub>☉</sub>)</label>
+                                <input type="text" id="mass-result" class="w-full p-2 bg-gray-900 rounded border border-gray-700" readonly>
+                            </div>
+                            
+                            <div class="flex justify-center">
+                                <button onclick="calculateBlackHoleMass()" class="neu-brutalism lego-blue p-3 rounded text-black"><i class="bi bi-calculator"></i> Calculate</button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-3">
+                            <button onclick="selectNucleus(1)" class="neu-brutalism bg-indigo-800 p-3 rounded">Nucleus A</button>
+                            <button onclick="selectNucleus(2)" class="neu-brutalism bg-indigo-800 p-3 rounded">Nucleus B</button>
+                            <button onclick="selectNucleus(3)" class="neu-brutalism bg-indigo-800 p-3 rounded">Nucleus C</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-6">
+                        <button onclick="backToDashboard()" class="neu-brutalism bg-gray-700 p-3 rounded"><i class="bi bi-arrow-left"></i> Back</button>
+                        <button onclick="skipLevel(4)" class="neu-brutalism bg-yellow-400 p-3 rounded text-black"><i class="bi bi-skip-forward-fill"></i> NEXT</button>
+                        <button id="complete-level-btn" onclick="completeLevel(1)" class="neu-brutalism lego-green p-3 rounded text-black disabled"><i class="bi bi-check-lg"></i> Complete</button>
+                    </div>
+                    
+                </div>
+                
+                <!-- Dialogue panel -->
+                <div class="neu-brutalism bg-gradient-to-br from-indigo-800 to-indigo-950 p-6 rounded-lg w-full lg:w-1/3">
+                    <h3 class="text-xl mb-4 flex items-center">
+                        <i class="bi bi-chat-square-text-fill mr-2"></i> Mission Log
+                    </h3>
+                    <div id="dialogue-container-4" class="space-y-6 max-h-96 overflow-y-auto pr-2">
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_starpad.png" alt="Nova" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-blue-400 mb-1">Nova:</p>
+                                <p class="bg-blue-950 p-3 rounded-lg">"My sensors are detecting... nothing? There's just emptiness ahead."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_inhale.png" alt="Kairon" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-green-400 mb-1">Kairon:</p>
+                                <p class="bg-green-950 p-3 rounded-lg">"Sometimes what we cannot see is the most powerful force in the cosmos. Welcome to the domain of black holes."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_inhale.png" alt="Kairon" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-green-400 mb-1">Kairon:</p>
+                                <p class="bg-green-950 p-3 rounded-lg">"Black holes can be identified by their effect on surrounding matter. Use the brightness peaks and redshift data to estimate their mass."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_starpad.png" alt="Nova" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-blue-400 mb-1">Nova:</p>
+                                <p class="bg-blue-950 p-3 rounded-lg">"I need to identify the true active galactic nuclei from these candidates. The real ones will have massive black holes at their centers!"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 5: Final Constellation -->
+        <div id="stage-5" class="hidden min-h-[80vh]">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Main gameplay area -->
+                <div class="neu-brutalism bg-gradient-to-br from-indigo-900 to-purple-900 p-6 rounded-lg w-full lg:w-2/3">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl">Stage 5: Final Constellation</h2>
+                        <span class="bg-yellow-400 text-black px-2 py-1 rounded text-sm">Galaxies Tagged: <span id="galaxies-tagged">0</span>/5</span>
+                    </div>
+                    
+                    <!-- Constellation Creator -->
+                    <div class="mb-6">
+                        <div class="relative">
+                            <canvas id="constellation-canvas" width="600" height="400" class="w-full h-80 rounded neu-brutalism bg-black"></canvas>
+                            <div id="constellation-complete" class="absolute top-4 right-4 hidden bg-green-500 text-white px-3 py-1 rounded">Constellation Complete!</div>
+                        </div>
+                        
+                        <div class="neu-brutalism bg-black p-4 rounded my-6">
+                            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                                <div class="flex-1">
+                                    <label for="ra-input" class="block mb-1">Right Ascension</label>
+                                    <input type="text" id="ra-input" class="w-full p-2 bg-gray-900 rounded border border-gray-700" placeholder="e.g., 12h 34m 56s">
+                                </div>
+                                <div class="flex-1">
+                                    <label for="dec-input" class="block mb-1">Declination</label>
+                                    <input type="text" id="dec-input" class="w-full p-2 bg-gray-900 rounded border border-gray-700" placeholder="e.g., +12° 34' 56\"">
+                                </div>
+                                <div class="flex items-end">
+                                    <button onclick="searchCoordinates()" class="neu-brutalism lego-blue h-[42px] p-3 rounded text-black"><i class="bi bi-search"></i></button>
+                                </div>
+                            </div>
+                            
+                            <div id="selected-galaxy" class="hidden">
+                                <div class="bg-gray-900 p-3 rounded mb-4">
+                                    <h4 class="text-lg mb-2">Selected Galaxy</h4>
+                                    <p id="galaxy-details" class="text-sm text-gray-300"></p>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label for="galaxy-name" class="block mb-1">Name this galaxy</label>
+                                        <input type="text" id="galaxy-name" class="w-full p-2 bg-gray-900 rounded border border-gray-700" placeholder="Enter a name...">
+                                    </div>
+                                    <div class="flex items-end">
+                                        <button onclick="tagGalaxy()" class="w-full neu-brutalism lego-green p-2 rounded text-black"><i class="bi bi-tag"></i> Add to Codex</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-6">
+                        <button onclick="backToDashboard()" class="neu-brutalism bg-gray-700 p-3 rounded"><i class="bi bi-arrow-left"></i> Back</button>
+                        <button onclick="skipLevel(5)" class="neu-brutalism bg-yellow-400 p-3 rounded text-black"><i class="bi bi-skip-forward-fill"></i> NEXT</button>
+                        <button id="complete-level-btn" onclick="completeLevel(1)" class="neu-brutalism lego-green p-3 rounded text-black disabled"><i class="bi bi-check-lg"></i> Complete</button>
+                    </div>
+                    
+                </div>
+                
+                <!-- Dialogue panel -->
+                <div class="neu-brutalism bg-gradient-to-br from-indigo-800 to-indigo-950 p-6 rounded-lg w-full lg:w-1/3">
+                    <h3 class="text-xl mb-4 flex items-center">
+                        <i class="bi bi-chat-square-text-fill mr-2"></i> Mission Log
+                    </h3>
+                    <div id="dialogue-container-5" class="space-y-6 max-h-96 overflow-y-auto pr-2">
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_inhale.png" alt="Kairon" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-green-400 mb-1">Kairon:</p>
+                                <p class="bg-green-950 p-3 rounded-lg">"You've come so far, explorer. Now it's time for your final task - to create your own celestial legacy."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_starpad.png" alt="Nova" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-blue-400 mb-1">Nova:</p>
+                                <p class="bg-blue-950 p-3 rounded-lg">"You mean I get to name my own galaxies? That's incredible!"</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_inhale.png" alt="Kairon" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-green-400 mb-1">Kairon:</p>
+                                <p class="bg-green-950 p-3 rounded-lg">"Search for galaxies using their coordinates. When you find one that interests you, tag it and add it to your personal Galaxy Codex."</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <img src="images/kirby_inhale.png" alt="Kairon" class="w-12 h-12 rounded neu-brutalism">
+                            <div>
+                                <p class="text-green-400 mb-1">Kairon:</p>
+                                <p class="bg-green-950 p-3 rounded-lg">"Tag five galaxies to complete your mission and preserve our knowledge for future generations."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Galaxy Codex -->
+        <div id="galaxy-codex" class="hidden min-h-[80vh]">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-2xl glow">Galaxy Codex</h2>
+                    <p class="text-indigo-300 mt-2">Your personal record of cosmic discoveries</p>
+                </div>
+                <button onclick="toggleCodex()" class="neu-brutalism bg-gray-700 p-3 rounded"><i class="bi bi-x-lg"></i> Close</button>
+            </div>
+            
+            <div class="neu-brutalism bg-indigo-900 p-6 rounded-lg">
+                <div id="codex-entries" class="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+                    <!-- Codex entries will be added here -->
+                    <div class="text-center py-10 text-gray-400">
+                        <i class="bi bi-stars text-4xl mb-3 block"></i>
+                        <p>Your Galactic discoveries will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Completion Certificate -->
+        <div id="completion-certificate" class="hidden min-h-[80vh] flex flex-col items-center justify-center">
+            <div class="neu-brutalism bg-gradient-to-br from-indigo-900 to-purple-900 p-10 rounded-lg w-full max-w-2xl mx-auto text-center">
+                <img src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?q=80&w=300&auto=format" alt="Galaxy" class="w-32 h-32 mx-auto mb-6 rounded-full neu-brutalism">
+                <h2 class="text-3xl mb-6 glow">Mission Complete!</h2>
+                <div class="neu-brutalism border-4 border-yellow-400 p-8 mb-8 bg-indigo-950">
+                    <h3 class="text-2xl mb-4 text-yellow-300">CERTIFICATE OF ACHIEVEMENT</h3>
+                    <p class="text-xl mb-6">This certifies that</p>
+                    <p class="text-3xl mb-6 text-yellow-300 font-bold" id="certificate-name">Explorer</p>
+                    <p class="text-xl mb-6">has earned the title</p>
+                    <p class="text-2xl mb-8 text-yellow-300">"Star Archivist of the GaldeX"</p>
+                    <p class="text-sm text-indigo-300">Awarded by Kairon, Guardian of Cosmic Knowledge</p>
+                </div>
+                <div class="text-center mb-6">
+                    <p class="text-lg mb-2">Final Message from Kairon:</p>
+                    <p class="italic text-indigo-200">"You've helped me preserve the knowledge of dying stars. You've written your name among the galaxies."</p>
+                </div>
+                <div class="flex justify-center gap-4">
+                    <button onclick="backToDashboard()" class="neu-brutalism bg-indigo-700 p-3 rounded"><i class="bi bi-house"></i> Return Home</button>
+                    <button onclick="exportCodex()" class="neu-brutalism lego-green p-3 rounded text-black"><i class="bi bi-download"></i> Export Codex</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="neu-brutalism bg-indigo-900 p-6 rounded-lg w-full max-w-md mx-4 popup">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl">Login</h3>
+                <button onclick="toggleModal('login-modal')" class="text-white text-2xl">&times;</button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="login-email" class="block mb-1">Email</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" class="w-full p-3 bg-black text-white neu-brutalism rounded">
+                </div>
+                <div>
+                    <label for="login-password" class="block mb-1">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" class="w-full p-3 bg-black text-white neu-brutalism rounded">
+                </div>
+                <button onclick="loginUser()" class="w-full lego-button neu-brutalism lego-blue p-3 rounded text-black">Login</button>
+                <p class="text-center">Don't have an account? <a href="#" onclick="toggleModals('login-modal', 'signup-modal')" class="text-indigo-300">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="neu-brutalism bg-indigo-900 p-6 rounded-lg w-full max-w-md mx-4 popup">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl">Sign Up</h3>
+                <button onclick="toggleModal('signup-modal')" class="text-white text-2xl">&times;</button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="signup-username" class="block mb-1">Username</label>
+                    <input type="text" id="signup-username" placeholder="Choose a username" class="w-full p-3 bg-black text-white neu-brutalism rounded">
+                </div>
+                <div>
+                    <label for="signup-email" class="block mb-1">Email</label>
+                    <input type="email" id="signup-email" placeholder="Enter your email" class="w-full p-3 bg-black text-white neu-brutalism rounded">
+                </div>
+                <div>
+                    <label for="signup-password" class="block mb-1">Password</label>
+                    <input type="password" id="signup-password" placeholder="Create a password" class="w-full p-3 bg-black text-white neu-brutalism rounded">
+                </div>
+                <button onclick="signupUser()" class="w-full lego-button neu-brutalism lego-yellow p-3 rounded text-black">Sign Up</button>
+                <p class="text-center">Already have an account? <a href="#" onclick="toggleModals('signup-modal', 'login-modal')" class="text-indigo-300">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Viewer Modal -->
+    <div id="post-viewer-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="neu-brutalism bg-indigo-900 p-6 rounded-lg w-full max-w-2xl mx-4 popup">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl" id="post-title">Galaxy Discovery</h3>
+                <button onclick="toggleModal('post-viewer-modal')" class="text-white text-2xl">&times;</button>
+            </div>
+            <div id="post-content" class="space-y-4">
+                <!-- Post content will be inserted here -->
+            </div>
+            <div class="mt-6 border-t border-indigo-700 pt-4">
+                <h4 class="text-lg mb-3">Comments</h4>
+                <div id="post-comments" class="space-y-3 max-h-60 overflow-y-auto mb-4">
+                    <!-- Comments will be inserted here -->
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="comment-input" placeholder="Add a comment..." class="flex-1 p-3 bg-black text-white neu-brutalism rounded">
+                    <button onclick="addComment()" class="neu-brutalism lego-green p-3 rounded text-black"><i class="bi bi-send"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state and variables
+        let playerName = '';
+        let currentLevel = 1;
+        let userLoggedIn = false;
+        let currentUserId = null;
+        let currentGalaxyIndex = 0;
+        let correctGalaxies = 0;
+        let currentDustImage = 1;
+        let clearedDustImages = 0;
+        let pathNodesConnected = 0;
+        let blackHolesFound = 0;
+        let galaxiesTagged = 0;
+        let currentPostId = null;
+        
+        // Mock data for users, galaxies, and posts
+        const pixelCharacters = [
+            { id: 1, name: "Mario", image: "images/a1.png" },
+            { id: 2, name: "Link", image: "images/kirby_inhale.png" },
+            { id: 3, name: "Samus", image: "images/kirby_starpad.png" },
+            { id: 4, name: "Megaman", image: "images/kirby_starpad.png" },
+            { id: 5, name: "Pacman", image: "images/kirby_starpad.png" }
+        ];
+        
+        const galaxyData = [
+            { id: 1, name: "NGC 1300", type: "Spiral", image: "../new.png" },
+            { id: 2, name: "M87", type: "Elliptical", image: "https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=1200&auto=format" },
+            { id: 3, name: "IC 4710", type: "Irregular", image: "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=1200&auto=format" }
+        ];
+        
+        let posts = [
+            {
+                id: 1,
+                userId: 1,
+                title: "Discovered a Beautiful Spiral!",
+                image: "../new.png",
+                galaxyType: "Spiral",
+                description: "Check out this amazing spiral galaxy I found in the NGC region!",
+                likes: 23,
+                comments: [
+                    { userId: 3, text: "Wow, those arms are spectacular!" },
+                    { userId: 5, text: "Great find! The dust lanes are clearly visible." }
+                ],
+                timestamp: new Date(Date.now() - 1000*60*60*24*2)
+            },
+            {
+                id: 2,
+                userId: 2,
+                title: "Is this an Elliptical?",
+                image: "../new.png",
+                galaxyType: "Elliptical",
+                description: "I think I found an elliptical galaxy, but I'm not entirely sure. What do you think?",
+                likes: 17,
+                comments: [
+                    { userId: 4, text: "Definitely elliptical! Look at that smooth gradient." },
+                    { userId: 1, text: "Nice find! It's a classic E3-type elliptical." }
+                ],
+                timestamp: new Date(Date.now() - 1000*60*60*24*5)
+            },
+            {
+                id: 3,
+                userId: 4,
+                title: "Strange Irregular Galaxy",
+                image: "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=1200&auto=format",
+                galaxyType: "Irregular",
+                description: "This one doesn't seem to follow any pattern. Must be an irregular galaxy!",
+                likes: 42,
+                comments: [
+                    { userId: 5, text: "Fascinating! Could be the result of a galaxy merger." },
+                    { userId: 3, text: "The high star formation rate makes those blue regions pop!" },
+                    { userId: 2, text: "I love these chaotic ones. Great discovery!" }
+                ],
+                timestamp: new Date(Date.now() - 1000*60*60*24*1)
+            }
+        ];
+        
+        // Initialize the game
+        document.addEventListener("DOMContentLoaded", function() {
+            createStars();
+            loadCommunityFeed();
+        });
+        
+        // Create starry background
+        function createStars() {
+            const starsContainer = document.getElementById('stars-container');
+            const numStars = 100;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 2}s`;
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Start the game
+        function startGame() {
+            playerName = document.getElementById('player-name-input').value;
+            if (!playerName || playerName.trim() === '') {
+                alert('Please enter your name to begin the mission!');
+                return;
+            }
+            
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('game-dashboard').classList.remove('hidden');
+            document.getElementById('player-name-display').textContent = playerName;
+            document.getElementById('certificate-name').textContent = playerName;
+        }
+        
+        // Start a specific level
+        function startLevel(level) {
+            if (level > currentLevel) {
+                return; // Can't access locked levels
+            }
+            
+            document.getElementById('game-dashboard').classList.add('hidden');
+            document.getElementById(`stage-${level}`).classList.remove('hidden');
+            
+            // Initialize level-specific content
+            if (level === 1) {
+                resetGalaxyClassification();
+            } else if (level === 2) {
+                resetDustStorm();
+            } else if (level === 3) {
+                initializeMaze();
+            } else if (level === 4) {
+                resetBlackHoleStage();
+            } else if (level === 5) {
+                initializeConstellation();
+            }
+        }
+        function skipLevel(level) {
+    // Unlock the next level instantly
+    if (level >= currentLevel && level < 5) {
+        currentLevel = level + 1;
+        document.getElementById('current-level').textContent = currentLevel;
+
+        const nextLevelCard = document.getElementById(`level-${currentLevel}-card`);
+        nextLevelCard.classList.remove('locked');
+        nextLevelCard.onclick = function() { startLevel(currentLevel); };
+
+        const statusBadge = nextLevelCard.querySelector('span.bg-gray-700');
+        if (statusBadge) {
+            statusBadge.classList.remove('bg-gray-700', 'text-gray-300');
+            statusBadge.classList.add('bg-yellow-400', 'text-black');
+            statusBadge.textContent = 'UNLOCKED';
+        }
+    }
+
+    // NEXT to next stage or dashboard
+    document.getElementById(`stage-${level}`).classList.add('hidden');
+    if (level < 5) {
+        startLevel(level + 1);
+    } else {
+        document.getElementById('game-dashboard').classList.remove('hidden');
+    }
+
+    // Add to codex even when skipped
+    addToCodex({
+        level: level,
+        title: document.querySelector(`#level-${level}-card h3`).textContent,
+        description: document.querySelector(`#level-${level}-card p`).textContent + " (Skipped)",
+        image: document.querySelector(`#level-${level}-card img`).src
+    });
+}
+
+        // Complete a level
+        function completeLevel(level) {
+            if (level === 1 && correctGalaxies < 3) {
+                alert('You need to correctly classify all three galaxies first!');
+                return;
+            }
+            else if (level === 2 && clearedDustImages < 3) {
+                alert('You need to clear all three dusty images first!');
+                return;
+            }
+            else if (level === 3 && pathNodesConnected < 5) {
+                alert('You need to complete the gravitational lensing path first!');
+                return;
+            }
+            else if (level === 4 && blackHolesFound < 3) {
+                alert('You need to identify all three black holes first!');
+                return;
+            }
+            
+            // Update game state
+            if (level >= currentLevel) {
+                currentLevel = level + 1;
+                document.getElementById('current-level').textContent = currentLevel;
+                
+                // Unlock next level
+                if (currentLevel <= 5) {
+                    const nextLevelCard = document.getElementById(`level-${currentLevel}-card`);
+                    nextLevelCard.classList.remove('locked');
+                    nextLevelCard.onclick = function() { startLevel(currentLevel); };
+                    
+                    // Update the status badge
+                    const statusBadge = nextLevelCard.querySelector('span.bg-gray-700');
+                    statusBadge.classList.remove('bg-gray-700', 'text-gray-300');
+                    statusBadge.classList.add('bg-yellow-400', 'text-black');
+                    statusBadge.textContent = 'UNLOCKED';
+                }
+            }
+            
+            document.getElementById(`stage-${level}`).classList.add('hidden');
+            document.getElementById('game-dashboard').classList.remove('hidden');
+            
+            // Add to codex
+            addToCodex({
+                level: level,
+                title: document.querySelector(`#level-${level}-card h3`).textContent,
+                description: document.querySelector(`#level-${level}-card p`).textContent,
+                image: document.querySelector(`#level-${level}-card img`).src
+            });
+        }
+        
+        // Complete the game
+        function completeGame() {
+            if (galaxiesTagged < 5) {
+                alert('You need to tag 5 galaxies in your Codex to complete the mission!');
+                return;
+            }
+            
+            document.getElementById('stage-5').classList.add('hidden');
+            document.getElementById('completion-certificate').classList.remove('hidden');
+        }
+        
+        // Go back to dashboard
+        function backToDashboard() {
+            // Hide all stage screens
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`stage-${i}`).classList.add('hidden');
+            }
+            document.getElementById('galaxy-codex').classList.add('hidden');
+            document.getElementById('completion-certificate').classList.add('hidden');
+            document.getElementById('game-dashboard').classList.remove('hidden');
+        }
+        
+        // Toggle Galaxy Codex
+        function toggleCodex() {
+            const codex = document.getElementById('galaxy-codex');
+            if (codex.classList.contains('hidden')) {
+                document.getElementById('game-dashboard').classList.add('hidden');
+                codex.classList.remove('hidden');
+            } else {
+                codex.classList.add('hidden');
+                document.getElementById('game-dashboard').classList.remove('hidden');
+            }
+        }
+        
+        // Add to Galaxy Codex
+        function addToCodex(entry) {
+            const codexEntries = document.getElementById('codex-entries');
+            
+            // Check if it's the first entry
+            if (codexEntries.querySelector('.text-center')) {
+                codexEntries.innerHTML = '';
+            }
+            
+            // Create entry
+            const entryElement = document.createElement('div');
+            entryElement.className = 'neu-brutalism bg-indigo-950 p-4 rounded-lg codex-entry';
+            entryElement.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <img src="${entry.image}" class="w-16 h-16 object-cover rounded neu-brutalism">
+                    <div>
+                        <h4 class="text-lg">${entry.title}</h4>
+                        <p class="text-sm text-indigo-300">${entry.description || ''}</p>
+                    </div>
+                </div>
+            `;
+            codexEntries.prepend(entryElement);
+        }
+        
+        // Export Codex
+        function exportCodex() {
+            alert("Codex exported! Your galactic discoveries have been saved.");
+        }
+        
+        // Level 1: Galaxy Classification functions
+        function resetGalaxyClassification() {
+            currentGalaxyIndex = 0;
+            correctGalaxies = 0;
+            updateGalaxyDisplay();
+            document.getElementById('complete-level-btn').classList.add('disabled');
+        }
+        
+        function updateGalaxyDisplay() {
+            document.getElementById('galaxy-image').src = galaxyData[currentGalaxyIndex].image;
+            document.getElementById('current-galaxy').textContent = currentGalaxyIndex + 1;
+            document.getElementById('classification-result').classList.add('hidden');
+        }
+        
+        function classifyGalaxy(type) {
+            const result = document.getElementById('classification-result');
+            
+            if (type === galaxyData[currentGalaxyIndex].type) {
+                result.textContent = 'Correct!';
+                result.classList.remove('bg-red-500');
+                result.classList.add('bg-green-500');
+                correctGalaxies++;
+                
+                // Move to next galaxy or complete
+                setTimeout(() => {
+                    if (currentGalaxyIndex < 2) {
+                        currentGalaxyIndex++;
+                        updateGalaxyDisplay();
+                    } else {
+                        if (correctGalaxies === 3) {
+                            document.getElementById('complete-level-btn').classList.remove('disabled');
+                        }
+                    }
+                }, 1000);
+            } else {
+                result.textContent = 'Try again!';
+                result.classList.remove('bg-green-500');
+                result.classList.add('bg-red-500');
+            }
+            
+            result.classList.remove('hidden');
+        }
+        
+
+
+        function runCode() {
+            const outputDiv = document.getElementById('output');
+            const code = document.getElementById('code-input').value.trim();
+
+            const expectedCode = `from galamo import galaxy_morph\ngalaxy_morph('galaxy.png')`;
+
+            if (code === expectedCode) {
+                outputDiv.style.color = 'green';
+                outputDiv.innerHTML = "SUCCESS: YES, IT'S A SPIRAL GALAXY";
+            } else {
+                outputDiv.style.color = 'red';
+                outputDiv.innerHTML = "ERROR: INVALID CODE FORMAT";
+            }
+        }
+
+        
+        // Level 2: Dust Storm functions
+        function resetDustStorm() {
+            currentDustImage = 1;
+            clearedDustImages = 0;
+            document.getElementById('current-dust-image').textContent = currentDustImage;
+            document.getElementById('brightness-slider').value = 50;
+            document.getElementById('contrast-slider').value = 50;
+            document.getElementById('brightness-value').textContent = '50%';
+            document.getElementById('contrast-value').textContent = '50%';
+            document.getElementById('filter-select').value = 'none';
+            document.getElementById('dust-clear-indicator').classList.add('hidden');
+            document.getElementById('next-dust-image-btn').classList.add('disabled');
+            document.getElementById('complete-level-2-btn').classList.add('disabled');
+            adjustImage();
+        }
+        
+        function adjustImage() {
+            const brightnessValue = document.getElementById('brightness-slider').value;
+            const contrastValue = document.getElementById('contrast-slider').value;
+            const filterType = document.getElementById('filter-select').value;
+            
+            document.getElementById('brightness-value').textContent = `${brightnessValue}%`;
+            document.getElementById('contrast-value').textContent = `${contrastValue}%`;
+            
+            const dustyImage = document.getElementById('dusty-image');
+            let filterString = `brightness(${brightnessValue/50}) contrast(${contrastValue/50})`;
+            
+            if (filterType === 'infrared') {
+                filterString += ' sepia(0.5) hue-rotate(320deg)';
+            } else if (filterType === 'uv') {
+                filterString += ' sepia(0.5) hue-rotate(180deg)';
+            } else if (filterType === 'xray') {
+                filterString += ' grayscale(1) invert(0.8)';
+            }
+            
+            dustyImage.style.filter = filterString;
+        }
+        
+        function checkImageClarity() {
+            const brightnessValue = parseInt(document.getElementById('brightness-slider').value);
+            const contrastValue = parseInt(document.getElementById('contrast-slider').value);
+            const filterType = document.getElementById('filter-select').value;
+            
+            // Different image has different optimal settings
+            let isCleared = false;
+            
+            if (currentDustImage === 1 && 
+                brightnessValue > 70 && 
+                contrastValue > 60 && 
+                filterType === 'infrared') {
+                isCleared = true;
+            } else if (currentDustImage === 2 && 
+                       brightnessValue > 65 && 
+                       contrastValue > 50 && 
+                       (filterType === 'xray' || filterType === 'uv')) {
+                isCleared = true;
+            } else if (currentDustImage === 3 && 
+                       brightnessValue > 60 && 
+                       contrastValue > 55 && 
+                       filterType === 'none') {
+                isCleared = true;
+            }
+            
+            const indicator = document.getElementById('dust-clear-indicator');
+            if (isCleared) {
+                indicator.textContent = '80% Clear!';
+                indicator.classList.remove('bg-red-500');
+                indicator.classList.add('bg-green-500');
+                document.getElementById('next-dust-image-btn').classList.remove('disabled');
+                
+                if (currentDustImage === 3) {
+                    document.getElementById('complete-level-2-btn').classList.remove('disabled');
+                }
+            } else {
+                indicator.textContent = 'Not clear enough';
+                indicator.classList.remove('bg-green-500');
+                indicator.classList.add('bg-red-500');
+            }
+            indicator.classList.remove('hidden');
+        }
+        
+        function moveToNextDustyImage() {
+            if (currentDustImage < 3) {
+                currentDustImage++;
+                clearedDustImages++;
+                document.getElementById('current-dust-image').textContent = currentDustImage;
+                document.getElementById('dust-clear-indicator').classList.add('hidden');
+                document.getElementById('next-dust-image-btn').classList.add('disabled');
+                
+                // Reset sliders
+                document.getElementById('brightness-slider').value = 50;
+                document.getElementById('contrast-slider').value = 50;
+                document.getElementById('brightness-value').textContent = '50%';
+                document.getElementById('contrast-value').textContent = '50%';
+                document.getElementById('filter-select').value = 'none';
+                
+                // Update image
+                const images = [
+                    "https://images.unsplash.com/photo-1543722530-d2c3201371e7?q=80&w=1200&auto=format&brightness=-30&contrast=-20",
+                    "../new.png&brightness=-40&contrast=-30",
+                    "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=1200&auto=format&brightness=-35&contrast=-25"
+                ];
+                document.getElementById('dusty-image').src = images[currentDustImage - 1];
+                adjustImage();
+            }
+        }
+        
+        // Level 3: Dark Matter Maze
+        function initializeMaze() {
+            pathNodesConnected = 0;
+            document.getElementById('path-progress').textContent = pathNodesConnected;
+            document.getElementById('maze-complete').classList.add('hidden');
+            document.getElementById('complete-level-3-btn').classList.add('disabled');
+            
+            const canvas = document.getElementById('maze-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw stars
+            ctx.fillStyle = 'white';
+            for (let i = 0; i < 100; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const size = Math.random() * 2 + 1;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Draw lensing effect (just visual, not functional)
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.2)';
+            ctx.lineWidth = 2;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            for (let i = 0; i < 5; i++) {
+                const radius = 50 + i * 30;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Draw connected nodes
+            drawPathNodes(ctx);
+            
+            // Add event listener to canvas
+            canvas.onclick = function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                checkNodeClick(x, y);
+            };
+        }
+        
+        function drawPathNodes(ctx) {
+            const nodes = [
+                {x: 100, y: 100, connected: false, order: 1},
+                {x: 200, y: 150, connected: false, order: 2},
+                {x: 300, y: 100, connected: false, order: 3},
+                {x: 400, y: 200, connected: false, order: 4},
+                {x: 500, y: 300, connected: false, order: 5},
+            ];
+            
+            // Store nodes in the canvas element for later access
+            const canvas = document.getElementById('maze-canvas');
+            canvas.nodes = nodes;
+            
+            // Draw nodes
+            for (const node of nodes) {
+                ctx.fillStyle = node.connected ? 'rgba(99, 255, 132, 0.8)' : 'rgba(99, 102, 241, 0.8)';
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 15, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw order number
+                ctx.fillStyle = 'white';
+                ctx.font = '12px monospace';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(node.order.toString(), node.x, node.y);
+            }
+        }
+        
+        function checkNodeClick(x, y) {
+            const canvas = document.getElementById('maze-canvas');
+            const ctx = canvas.getContext('2d');
+            const nodes = canvas.nodes;
+            
+            for (let i = 0; i < nodes.length; i++) {
+                const node = nodes[i];
+                const distance = Math.sqrt(Math.pow(x - node.x, 2) + Math.pow(y - node.y, 2));
+                
+                if (distance <= 15) {
+                    // Check if this is the next node in sequence
+                    if (node.order === pathNodesConnected + 1) {
+                        node.connected = true;
+                        pathNodesConnected++;
+                        document.getElementById('path-progress').textContent = pathNodesConnected;
+                        
+                        // Redraw all nodes
+                        ctx.fillStyle = 'black';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        
+                        // Draw stars again
+                        ctx.fillStyle = 'white';
+                        for (let i = 0; i < 100; i++) {
+                            const starX = Math.random() * canvas.width;
+                            const starY = Math.random() * canvas.height;
+                            const size = Math.random() * 2 + 1;
+                            ctx.beginPath();
+                            ctx.arc(starX, starY, size, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                        
+                        // Draw lensing effect
+                        ctx.strokeStyle = 'rgba(99, 102, 241, 0.2)';
+                        ctx.lineWidth = 2;
+                        const centerX = canvas.width / 2;
+                        const centerY = canvas.height / 2;
+                        
+                        for (let i = 0; i < 5; i++) {
+                            const radius = 50 + i * 30;
+                            ctx.beginPath();
+                            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                            ctx.stroke();
+                        }
+                        
+                        // Draw path lines
+                        ctx.strokeStyle = 'rgba(129, 140, 248, 0.8)';
+                        ctx.lineWidth = 3;
+                        for (let j = 1; j < pathNodesConnected; j++) {
+                            const prevNode = nodes.find(n => n.order === j);
+                            const currNode = nodes.find(n => n.order === j + 1);
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(prevNode.x, prevNode.y);
+                            ctx.lineTo(currNode.x, currNode.y);
+                            ctx.stroke();
+                        }
+                        
+                        drawPathNodes(ctx);
+                        
+                        // Check if all nodes are connected
+                        if (pathNodesConnected === 5) {
+                            document.getElementById('maze-complete').classList.remove('hidden');
+                            document.getElementById('complete-level-3-btn').classList.remove('disabled');
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        
+        function resetMaze() {
+            pathNodesConnected = 0;
+            document.getElementById('path-progress').textContent = pathNodesConnected;
+            document.getElementById('maze-complete').classList.add('hidden');
+            
+            const canvas = document.getElementById('maze-canvas');
+            const ctx = canvas.getContext('2d');
+            const nodes = canvas.nodes;
+            
+            // Reset all nodes
+            for (const node of nodes) {
+                node.connected = false;
+            }
+            
+            // Clear and redraw
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw stars
+            ctx.fillStyle = 'white';
+            for (let i = 0; i < 100; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const size = Math.random() * 2 + 1;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Draw lensing effect
+            ctx.strokeStyle = 'rgba(99, 102, 241, 0.2)';
+            ctx.lineWidth = 2;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            for (let i = 0; i < 5; i++) {
+                const radius = 50 + i * 30;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            drawPathNodes(ctx);
+        }
+        
+        // Level 4: Black Hole functions
+        function resetBlackHoleStage() {
+            blackHolesFound = 0;
+            document.getElementById('black-holes-found').textContent = blackHolesFound;
+            document.getElementById('black-hole-result').classList.add('hidden');
+            document.getElementById('next-black-hole-btn').classList.add('disabled');
+            document.getElementById('complete-level-4-btn').classList.add('disabled');
+            
+            // Reset inputs
+            document.getElementById('brightness-peak').value = '';
+            document.getElementById('redshift-value').value = '';
+            document.getElementById('mass-result').value = '';
+        }
+        
+        function calculateBlackHoleMass() {
+            const brightnessInput = document.getElementById('brightness-peak').value;
+            const redshiftInput = document.getElementById('redshift-value').value;
+            
+            if (!brightnessInput || !redshiftInput) {
+                alert('Please enter both brightness peak and redshift values');
+                return;
+            }
+            
+            const brightness = parseFloat(brightnessInput);
+            const redshift = parseFloat(redshiftInput);
+            
+            if (isNaN(brightness) || isNaN(redshift)) {
+                alert('Please enter valid numbers');
+                return;
+            }
+            
+            // Calculate black hole mass using the formula: log10(MBH) = 0.5·log10(L) + 0.9·z + 6.2
+            const logBrightness = Math.log10(brightness);
+            const blackHoleMass = 0.5 * logBrightness + 0.9 * redshift + 6.2;
+            
+            document.getElementById('mass-result').value = blackHoleMass.toFixed(2);
+        }
+        
+        function selectNucleus(nucleusId) {
+            // Each nucleus ID has a specific correct answer
+            let isCorrect = false;
+            
+            if (blackHolesFound === 0 && nucleusId === 2) {
+                isCorrect = true;
+            } else if (blackHolesFound === 1 && nucleusId === 3) {
+                isCorrect = true;
+            } else if (blackHolesFound === 2 && nucleusId === 1) {
+                isCorrect = true;
+            }
+            
+            const result = document.getElementById('black-hole-result');
+            
+            if (isCorrect) {
+                result.textContent = 'Black Hole Confirmed!';
+                result.classList.remove('bg-red-500');
+                result.classList.add('bg-green-500');
+                blackHolesFound++;
+                document.getElementById('black-holes-found').textContent = blackHolesFound;
+                
+                if (blackHolesFound < 3) {
+                    document.getElementById('next-black-hole-btn').classList.remove('disabled');
+                } else {
+                    document.getElementById('complete-level-4-btn').classList.remove('disabled');
+                }
+            } else {
+                result.textContent = 'Not a black hole. Try another nucleus.';
+                result.classList.remove('bg-green-500');
+                result.classList.add('bg-red-500');
+            }
+            
+            result.classList.remove('hidden');
+        }
+        
+        function moveToNextBlackHole() {
+            document.getElementById('black-hole-result').classList.add('hidden');
+            document.getElementById('next-black-hole-btn').classList.add('disabled');
+            
+            // Change image based on current progress
+            const images = [
+                "https://images.unsplash.com/photo-1580154140865-3bc5be9f5898?q=80&w=1200&auto=format",
+                "https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?q=80&w=1200&auto=format",
+                "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?q=80&w=1200&auto=format"
+            ];
+            
+            if (blackHolesFound < 3) {
+                document.getElementById('black-hole-image').src = images[blackHolesFound];
+            }
+            
+            // Reset inputs
+            document.getElementById('brightness-peak').value = '';
+            document.getElementById('redshift-value').value = '';
+            document.getElementById('mass-result').value = '';
+        }
+        
+        // Level 5: Final Constellation
+        function initializeConstellation() {
+            galaxiesTagged = 0;
+            document.getElementById('galaxies-tagged').textContent = galaxiesTagged;
+            document.getElementById('selected-galaxy').classList.add('hidden');
+            document.getElementById('constellation-complete').classList.add('hidden');
+            document.getElementById('complete-level-5-btn').classList.add('disabled');
+            
+            const canvas = document.getElementById('constellation-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Draw star field
+            drawStarField(ctx, canvas.width, canvas.height);
+        }
+        
+        function drawStarField(ctx, width, height) {
+            // Clear canvas
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw many small stars
+            for (let i = 0; i < 200; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = Math.random() * 2 + 0.5;
+                const brightness = Math.random() * 0.5 + 0.5;
+                
+                ctx.fillStyle = `rgba(255, 255, 255, ${brightness})`;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Draw a few brighter stars
+            for (let i = 0; i < 50; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = Math.random() * 3 + 1;
+                
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Add glow effect
+                const gradient = ctx.createRadialGradient(x, y, size, x, y, size * 3);
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(x, y, size * 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Draw connection lines for tagged galaxies
+            if (canvas.taggedPoints && canvas.taggedPoints.length > 1) {
+                ctx.strokeStyle = 'rgba(129, 140, 248, 0.7)';
+                ctx.lineWidth = 2;
+                
+                ctx.beginPath();
+                ctx.moveTo(canvas.taggedPoints[0].x, canvas.taggedPoints[0].y);
+                
+                for (let i = 1; i < canvas.taggedPoints.length; i++) {
+                    ctx.lineTo(canvas.taggedPoints[i].x, canvas.taggedPoints[i].y);
+                }
+                
+                ctx.stroke();
+            }
+            
+            // Draw tagged galaxy points
+            if (canvas.taggedPoints) {
+                for (const point of canvas.taggedPoints) {
+                    ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Add label
+                    ctx.fillStyle = 'white';
+                    ctx.font = '12px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(point.name, point.x, point.y + 20);
+                }
+            }
+        }
+        
+        function searchCoordinates() {
+            const ra = document.getElementById('ra-input').value;
+            const dec = document.getElementById('dec-input').value;
+            
+            if (!ra || !dec) {
+                alert('Please enter both Right Ascension and Declination');
+                return;
+            }
+            
+            // Simulate finding a galaxy
+            const canvas = document.getElementById('constellation-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Generate a random position on canvas
+            const x = Math.random() * (canvas.width - 100) + 50;
+            const y = Math.random() * (canvas.height - 100) + 50;
+            
+            // Draw a simulated galaxy at that position
+            drawStarField(ctx, canvas.width, canvas.height);
+            
+            // Draw galaxy highlight
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.3)';
+            ctx.beginPath();
+            ctx.arc(x, y, 30, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Store current coordinates
+            canvas.currentPoint = { x, y, ra, dec };
+            
+            // Show galaxy details
+            document.getElementById('selected-galaxy').classList.remove('hidden');
+            document.getElementById('galaxy-details').textContent = `RA: ${ra}, Dec: ${dec}, Distance: ${Math.round(Math.random() * 1000) + 100} Mly`;
+        }
+        
+        function tagGalaxy() {
+            const canvas = document.getElementById('constellation-canvas');
+            const galaxyName = document.getElementById('galaxy-name').value;
+            
+            if (!galaxyName || !canvas.currentPoint) {
+                alert('Please name this galaxy before adding it to your Codex');
+                return;
+            }
+            
+            // Initialize tagged points array if it doesn't exist
+            if (!canvas.taggedPoints) {
+                canvas.taggedPoints = [];
+            }
+            
+            // Add current point to tagged points
+            canvas.taggedPoints.push({
+                x: canvas.currentPoint.x,
+                y: canvas.currentPoint.y,
+                ra: canvas.currentPoint.ra,
+                dec: canvas.currentPoint.dec,
+                name: galaxyName
+            });
+            
+            // Update tagged count
+            galaxiesTagged++;
+            document.getElementById('galaxies-tagged').textContent = galaxiesTagged;
+            
+            // Add to codex
+            addToCodex({
+                title: galaxyName,
+                description: `RA: ${canvas.currentPoint.ra}, Dec: ${canvas.currentPoint.dec}`,
+                image: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=300&auto=format"
+            });
+            
+            // Redraw canvas with connections
+            drawStarField(canvas.getContext('2d'), canvas.width, canvas.height);
+            
+            // Reset form
+            document.getElementById('galaxy-name').value = '';
+            document.getElementById('selected-galaxy').classList.add('hidden');
+            
+            // Check if completed
+            if (galaxiesTagged >= 5) {
+                document.getElementById('constellation-complete').classList.remove('hidden');
+                document.getElementById('complete-level-5-btn').classList.remove('disabled');
+            }
+        }
+        
+        // User authentication functions
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+        
+        function toggleModals(hideId, showId) {
+            document.getElementById(hideId).classList.add('hidden');
+            document.getElementById(showId).classList.remove('hidden');
+        }
+        
+        function loginUser() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                alert('Please enter both email and password');
+                return;
+            }
+            
+            // Simulate login success
+            userLoggedIn = true;
+            currentUserId = Math.floor(Math.random() * 5) + 1;
+            
+            alert('Logged in successfully!');
+            toggleModal('login-modal');
+            
+            // Update header
+            document.querySelector('header .flex.space-x-3').innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <img src="${pixelCharacters[currentUserId-1].image}" alt="Profile" class="w-8 h-8 rounded-full">
+                    <span>${pixelCharacters[currentUserId-1].name}</span>
+                </div>
+                <button onclick="logoutUser()" class="neu-brutalism px-3 py-2 text-sm bg-red-600 text-white hover:bg-red-700">Logout</button>
+            `;
+        }
+        
+        function signupUser() {
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            
+            if (!username || !email || !password) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            alert('Account created successfully! Please login.');
+            toggleModals('signup-modal', 'login-modal');
+        }
+        
+        function logoutUser() {
+            userLoggedIn = false;
+            currentUserId = null;
+            
+            // Reset header
+            document.querySelector('header .flex.space-x-3').innerHTML = `
+                <button onclick="toggleModal('login-modal')" class="lego-button neu-brutalism px-3 py-2 text-sm md:text-base lego-blue text-black hover:bg-blue-500">Login</button>
+                <button onclick="toggleModal('signup-modal')" class="lego-button neu-brutalism px-3 py-2 text-sm md:text-base lego-yellow text-black hover:bg-yellow-400">Sign Up</button>
+            `;
+            
+            // Go back to welcome screen
+            document.getElementById('game-dashboard').classList.add('hidden');
+            document.getElementById('galaxy-codex').classList.add('hidden');
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`stage-${i}`).classList.add('hidden');
+            }
+            document.getElementById('welcome-screen').classList.remove('hidden');
+        }
+        
+        // Community feed functions
+        function loadCommunityFeed() {
+            const feedContainer = document.getElementById('community-feed');
+            feedContainer.innerHTML = '';
+            
+            // Sort posts by timestamp (newest first)
+            const sortedPosts = [...posts].sort((a, b) => b.timestamp - a.timestamp);
+            
+            for (const post of sortedPosts) {
+                const user = pixelCharacters.find(u => u.id === post.userId);
+                
+                // Format timestamp
+                const timeAgo = getTimeAgo(post.timestamp);
+                
+                // Create post element
+                const postElement = document.createElement('div');
+                postElement.className = 'neu-brutalism bg-indigo-900 p-4 rounded-lg';
+                postElement.innerHTML = `
+                    <div class="flex items-center mb-3">
+                        <img src="${user.image}" alt="${user.name}" class="w-10 h-10 rounded-full mr-3">
+                        <div>
+                            <p class="font-semibold">${user.name}</p>
+                            <p class="text-xs text-indigo-300">${timeAgo}</p>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">${post.title}</h3>
+                    <div class="mb-3 relative">
+                        <img src="${post.image}" alt="Galaxy" class="w-full h-40 object-cover rounded">
+                        <span class="absolute top-2 right-2 bg-indigo-600 px-2 py-1 rounded text-xs">${post.galaxyType}</span>
+                    </div>
+                    <p class="mb-4">${post.description}</p>
+                    <div class="flex justify-between items-center">
+                        <div class="flex space-x-4">
+                            <button onclick="likePost(${post.id})" class="flex items-center">
+                                <i class="bi bi-heart${post.liked ? '-fill text-red-500' : ''}"></i>
+                                <span class="ml-1">${post.likes}</span>
+                            </button>
+                            <button onclick="openPost(${post.id})" class="flex items-center">
+                                <i class="bi bi-chat"></i>
+                                <span class="ml-1">${post.comments.length}</span>
+                            </button>
+                        </div>
+                        <button onclick="openPost(${post.id})" class="text-indigo-300 text-sm">View More</button>
+                    </div>
+                `;
+                feedContainer.appendChild(postElement);
+            }
+        }
+        
+        function getTimeAgo(timestamp) {
+            const seconds = Math.floor((new Date() - timestamp) / 1000);
+            
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+            
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+            
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+            
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+            
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " minutes ago";
+            
+            return Math.floor(seconds) + " seconds ago";
+        }
+        
+        function openPost(postId) {
+            currentPostId = postId;
+            const post = posts.find(p => p.id === postId);
+            const user = pixelCharacters.find(u => u.id === post.userId);
+            
+            document.getElementById('post-title').textContent = post.title;
+            
+            const postContent = document.getElementById('post-content');
+            postContent.innerHTML = `
+                <div class="flex items-center mb-3">
+                    <img src="${user.image}" alt="${user.name}" class="w-10 h-10 rounded-full mr-3">
+                    <div>
+                        <p class="font-semibold">${user.name}</p>
+                        <p class="text-xs text-indigo-300">${getTimeAgo(post.timestamp)}</p>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <img src="${post.image}" alt="Galaxy" class="w-full h-64 object-cover rounded neu-brutalism mb-3">
+                    <span class="bg-indigo-600 px-2 py-1 rounded text-xs">${post.galaxyType}</span>
+                </div>
+                <p class="mb-6">${post.description}</p>
+                <div class="flex items-center space-x-4 pb-4 border-b border-indigo-800">
+                    <button onclick="likePost(${post.id}, true)" class="flex items-center neu-brutalism px-3 py-1 rounded bg-indigo-800 hover:bg-indigo-700">
+                        <i class="bi bi-heart${post.liked ? '-fill text-red-500' : ''}"></i>
+                        <span class="ml-1">${post.likes}</span>
+                    </button>
+                    <span class="text-indigo-300 text-sm">${post.comments.length} comments</span>
+                </div>
+            `;
+            
+            // Load comments
+            loadComments(postId);
+            
+            toggleModal('post-viewer-modal');
+        }
+        
+        function loadComments(postId) {
+            const post = posts.find(p => p.id === postId);
+            const commentsContainer = document.getElementById('post-comments');
+            commentsContainer.innerHTML = '';
+            
+            if (post.comments.length === 0) {
+                commentsContainer.innerHTML = '<p class="text-center text-gray-400 py-3">No comments yet</p>';
+                return;
+            }
+            
+            for (const comment of post.comments) {
+                const user = pixelCharacters.find(u => u.id === comment.userId);
+                
+                const commentElement = document.createElement('div');
+                commentElement.className = 'flex items-start gap-3';
+                commentElement.innerHTML = `
+                    <img src="${user.image}" alt="${user.name}" class="w-8 h-8 rounded-full">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-1">
+                            <p class="font-semibold text-sm">${user.name}</p>
+                        </div>
+                        <p class="bg-indigo-950 p-2 rounded">${comment.text}</p>
+                    </div>
+                `;
+                commentsContainer.appendChild(commentElement);
+            }
+        }
+        
+        function likePost(postId, fromModal = false) {
+            if (!userLoggedIn) {
+                alert('Please login to like posts');
+                toggleModal('login-modal');
+                return;
+            }
+            
+            const post = posts.find(p => p.id === postId);
+            
+            if (post.liked) {
+                post.likes--;
+                post.liked = false;
+            } else {
+                post.likes++;
+                post.liked = true;
+            }
+            
+            if (fromModal) {
+                // Update post viewer
+                const likeButton = document.querySelector('#post-content button');
+                const iconElement = likeButton.querySelector('i');
+                const countElement = likeButton.querySelector('span');
+                
+                if (post.liked) {
+                    iconElement.classList.remove('bi-heart');
+                    iconElement.classList.add('bi-heart-fill', 'text-red-500');
+                } else {
+                    iconElement.classList.remove('bi-heart-fill', 'text-red-500');
+                    iconElement.classList.add('bi-heart');
+                }
+                
+                countElement.textContent = post.likes;
+            }
+            
+            // Also update main feed
+            loadCommunityFeed();
+        }
+        
+        function addComment() {
+            if (!userLoggedIn) {
+                alert('Please login to comment');
+                toggleModal('login-modal');
+                return;
+            }
+            
+            const commentText = document.getElementById('comment-input').value;
+            
+            if (!commentText || !currentPostId) {
+                return;
+            }
+            
+            const post = posts.find(p => p.id === currentPostId);
+            post.comments.push({
+                userId: currentUserId,
+                text: commentText
+            });
+            
+            document.getElementById('comment-input').value = '';
+            loadComments(currentPostId);
+            loadCommunityFeed();
+        }
+        
+        // Share galaxy discovery to feed
+        function shareToFeed() {
+            if (!userLoggedIn) {
+                alert('Please login to share your discovery');
+                toggleModal('login-modal');
+                return;
+            }
+            
+            const galaxyType = galaxyData[currentGalaxyIndex].type;
+            const galaxyImage = galaxyData[currentGalaxyIndex].image;
+            
+            // Create new post
+            const newPostId = posts.length + 1;
+            posts.push({
+                id: newPostId,
+                userId: currentUserId,
+                title: `I Found a ${galaxyType} Galaxy!`,
+                image: galaxyImage,
+                galaxyType: galaxyType,
+                description: `Just discovered this amazing ${galaxyType.toLowerCase()} galaxy during my GaldeX mission!`,
+                likes: 0,
+                comments: [],
+                timestamp: new Date()
+            });
+            
+            alert('Your discovery has been shared with the community!');
+            loadCommunityFeed();
+        }
+        
+        // Show message for locked levels
+        function showLockedMessage(level) {
+            alert(`Level ${level} is locked. Complete the previous level to unlock it.`);
+        }
+    </script>
+</body>
+</html>
